@@ -1,0 +1,455 @@
+:root {
+    --rr-text: var(--now-color--text-primary, 22, 27, 28);
+    --rr-text-secondary: var(--now-color--text-secondary, 70, 79, 83);
+    --rr-text-tertiary: var(--now-color--text-tertiary, 109, 114, 120);
+    --rr-surface: var(--now-color--background-primary, 255, 255, 255);
+    --rr-surface-alt: var(--now-color--background-secondary, 237, 238, 240);
+    --rr-surface-hover: var(--now-color--background-tertiary, 246, 247, 248);
+    --rr-border: var(--now-color--divider-secondary, 214, 217, 220);
+    --rr-link: var(--now-color--interactive-primary, 42, 101, 161);
+}
+
+.rr-app {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    color: rgb(var(--rr-text));
+    font-family: inherit;
+    background-color: rgb(var(--rr-surface));
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.rr-header {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.rr-subtitle {
+    margin: 0;
+    color: rgb(var(--rr-text-secondary));
+    font-size: 13px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Filter section (recovered from the original report's source map).
+ * Native elements styled with --now-* design tokens (with fallbacks).
+ * ------------------------------------------------------------------------- */
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    border-radius: 8px;
+    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
+}
+
+.filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.filters-row-secondary {
+    align-items: flex-end;
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 190px;
+}
+
+.filter-field-wide {
+    flex: 1 1 100%;
+    min-width: 100%;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+}
+
+.filter-label-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.filter-optional {
+    font-size: 13px;
+    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
+}
+
+.filter-action {
+    min-width: auto;
+}
+
+/* Search-by toggle */
+.search-mode-toggle {
+    display: inline-flex;
+    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.toggle-btn {
+    padding: 4px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    border: none;
+    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
+    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
+    cursor: pointer;
+    transition: background-color .15s, color .15s;
+}
+
+.toggle-btn:not(:last-child) {
+    border-right: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+}
+
+.toggle-btn.active {
+    background-color: rgb(var(--now-color--interactive-primary, 42, 101, 161));
+    color: rgb(var(--now-color--always-white, 255, 255, 255));
+    font-weight: 600;
+}
+
+/* Multi-select chip picker (UserPicker / GroupPicker) */
+.user-picker {
+    position: relative;
+    width: 100%;
+}
+
+.user-picker-input-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    border-radius: 4px;
+    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
+    min-height: 36px;
+    align-items: center;
+    cursor: text;
+}
+
+.user-picker-input-area:focus-within {
+    border-color: rgb(var(--now-color--focus-ring, 0, 128, 163));
+    box-shadow: 0 0 0 1px rgb(var(--now-color--focus-ring, 0, 128, 163));
+}
+
+.user-picker-input {
+    border: none;
+    outline: none;
+    flex: 1;
+    min-width: 120px;
+    font-size: 14px;
+    font-family: inherit;
+    background: transparent;
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+    padding: 2px 0;
+}
+
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: rgb(var(--now-color--background-tertiary, 246, 247, 248));
+    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    font-size: 13px;
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+    white-space: nowrap;
+}
+
+.user-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.user-chip-remove:hover {
+    background-color: rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+}
+
+.user-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    border-radius: 4px;
+    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.user-picker-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+    cursor: pointer;
+}
+
+.user-picker-item:hover {
+    background-color: rgb(var(--now-color--background-tertiary, 246, 247, 248));
+}
+
+.user-picker-item.loading,
+.user-picker-item.no-results {
+    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
+    cursor: default;
+}
+
+.user-picker-item.loading:hover,
+.user-picker-item.no-results:hover {
+    background-color: transparent;
+}
+
+.user-picker-item-name {
+    font-size: 14px;
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+}
+
+.user-picker-item-email {
+    font-size: 12px;
+    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
+}
+
+/* Native date inputs and granularity select */
+.sn-input,
+.sn-select {
+    padding: 7px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+    border-radius: 4px;
+    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
+    color: rgb(var(--now-color--text-primary, 22, 27, 28));
+    min-height: 36px;
+    box-sizing: border-box;
+}
+
+.sn-input:focus,
+.sn-select:focus {
+    outline: none;
+    border-color: rgb(var(--now-color--focus-ring, 0, 128, 163));
+    box-shadow: 0 0 0 1px rgb(var(--now-color--focus-ring, 0, 128, 163));
+}
+
+/* Primary action button */
+.sn-button-primary {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    background-color: rgb(var(--now-color--interactive-primary, 42, 101, 161));
+    color: rgb(var(--now-color--always-white, 255, 255, 255));
+    min-height: 36px;
+    cursor: pointer;
+    transition: background-color .15s;
+}
+
+.sn-button-primary:hover:not(:disabled) {
+    background-color: rgb(var(--now-color--interactive-primary-hover, 32, 81, 141));
+}
+
+.sn-button-primary:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Results card */
+.rr-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1.25rem;
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 8px;
+    background-color: rgb(var(--rr-surface));
+}
+
+.rr-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.rr-page-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 13px;
+}
+
+.rr-showing {
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 13px;
+}
+
+.rr-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 6px;
+}
+
+.rr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    font-size: 14px;
+    color: rgb(var(--rr-text));
+}
+
+.rr-table thead {
+    background-color: rgb(var(--rr-surface-alt));
+}
+
+.rr-th {
+    padding: 0;
+    border-bottom: 1px solid rgb(var(--rr-border));
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    background-color: rgb(var(--rr-surface-alt));
+}
+
+/* Clean sort header button (reset native button styling) */
+.rr-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(var(--rr-text-secondary));
+    cursor: pointer;
+    text-align: left;
+}
+
+.rr-th--num .rr-sort {
+    justify-content: flex-start;
+}
+
+/* Dotted underline signals the header has an explanatory tooltip */
+.rr-sort--tip .rr-sort__label {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: rgb(var(--rr-text-tertiary));
+    text-underline-offset: 3px;
+}
+
+.rr-sort__ind {
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 0.8em;
+    line-height: 1;
+}
+
+.rr-sort:hover {
+    background-color: rgb(var(--rr-surface-hover));
+}
+
+.rr-td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgb(var(--rr-border));
+    color: rgb(var(--rr-text));
+}
+
+.rr-td--num {
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+}
+
+.rr-table tbody tr:last-child .rr-td {
+    border-bottom: none;
+}
+
+.rr-table tbody tr:hover .rr-td {
+    background-color: rgb(var(--rr-surface-hover));
+}
+
+/* Drill-down links on the hour cells (open the underlying list in a new tab) */
+.rr-link {
+    color: rgb(var(--rr-link));
+    text-decoration: none;
+}
+
+.rr-link:hover {
+    text-decoration: underline;
+}
+
+/* Boxed, centered pager */
+.rr-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.rr-pg-btn {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    margin: 0;
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 4px;
+    background-color: rgb(var(--rr-surface));
+    color: rgb(var(--rr-text));
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.rr-pg-btn:hover:not(:disabled) {
+    background-color: rgb(var(--rr-surface-hover));
+}
+
+.rr-pg-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.rr-pager__status {
+    padding: 0 0.75rem;
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 13px;
+}
