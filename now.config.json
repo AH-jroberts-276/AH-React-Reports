@@ -1,0 +1,6 @@
+{
+  "scope": "x_cahcs_react_rpt",
+  "scopeId": "a721f92797a34b900d54d124a253af79",
+  "name": "React Reports",
+  "tsconfigPath": "./src/server/tsconfig.json"
+}

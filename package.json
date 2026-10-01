@@ -1,0 +1,19 @@
+{
+    "name": "x-cahcs-react-reports",
+    "version": "1.0.0",
+    "description": "Scoped application (scope x_cahcs_react_rpt) for Advocate Health that houses multiple React-based reporting UI pages — Resource Reporting, Task Resource Dashboard, and SLA Breach — deployed together as one application.",
+    "license": "UNLICENSED",
+    "imports": {
+        "#now:*": "./@types/servicenow/fluent/*/index.js"
+    },
+    "scripts": {
+        "build": "now-sdk build",
+        "deploy": "now-sdk install",
+        "transform": "now-sdk transform",
+        "types": "now-sdk dependencies"
+    },
+    "devDependencies": {
+        "@servicenow/sdk": "4.13.3",
+        "@servicenow/glide": "27.0.5"
+    }
+}
