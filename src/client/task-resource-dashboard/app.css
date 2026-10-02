@@ -1,0 +1,359 @@
+:root {
+  /* Surfaces & borders */
+  --trad-surface: rgb(var(--now-container--color, 255, 255, 255));
+  --trad-surface-alt: rgb(var(--now-color_background--secondary, 245, 246, 247));
+  --trad-surface-head: rgb(var(--now-color_background--tertiary, 226, 229, 231));
+  --trad-border: rgb(var(--now-container--border-color, 207, 213, 215));
+  /* Text */
+  --trad-text: rgb(var(--now-color_text--primary, 16, 23, 26));
+  --trad-text-muted: rgb(var(--now-color_text--secondary, 75, 85, 89));
+  /* Spacing */
+  --trad-space-sm: var(--now-static-space--sm, 0.5rem);
+  --trad-space-md: var(--now-static-space--md, 0.75rem);
+  --trad-space-lg: var(--now-static-space--lg, 1rem);
+  --trad-space-xl: var(--now-static-space--xl, 1.5rem);
+  /* Radius & typography */
+  --trad-radius: var(--now-container--border-radius, 8px);
+  --trad-font: var(--now-font-family, Lato, Arial, sans-serif);
+  /* Badge accents */
+  --trad-badge-task-bg: rgb(var(--now-indicator--primary_info--background-color, 0, 128, 163));
+  --trad-badge-task-fg: rgb(var(--now-indicator_label--primary_info--color, 255, 255, 255));
+  --trad-badge-res-bg: rgb(var(--now-indicator--primary_positive--background-color, 62, 134, 0));
+  --trad-badge-res-fg: rgb(var(--now-indicator_label--primary_positive--color, 255, 255, 255));
+}
+
+.trad-app {
+  margin: 0;
+  padding: var(--trad-space-xl);
+  font-family: var(--trad-font);
+  color: var(--trad-text);
+  background-color: var(--trad-surface-alt);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--trad-space-lg);
+  box-sizing: border-box;
+}
+
+.trad-app__header {
+  margin: 0;
+}
+
+.trad-app__subtitle {
+  margin: var(--trad-space-sm) 0 0 0;
+  color: var(--trad-text-muted);
+  font-size: 0.875rem;
+}
+
+.trad-card {
+  background-color: var(--trad-surface);
+  border: 1px solid var(--trad-border);
+  border-radius: var(--trad-radius);
+  box-shadow: var(--now-static-drop-shadow--sm);
+  padding: var(--trad-space-lg);
+}
+
+.trad-card--results {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Filter bar */
+.trad-filterbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--trad-space-lg);
+}
+
+/* One logical row of filters in the grouped layout. */
+.trad-filterbar__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--trad-space-lg);
+}
+
+/* Assignment group / User / Type / Status: equal 2x2 grid. */
+.trad-filterbar__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--trad-space-lg);
+}
+
+/* A titled filter section (e.g. Dates). */
+.trad-filterbar__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--trad-space-sm);
+}
+
+.trad-filterbar__section-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--trad-text);
+}
+
+.trad-filterbar__field {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.trad-filterbar__field--group {
+  flex: 1 1 var(--group-field-width, 240px);
+  min-width: var(--group-field-width, 200px);
+}
+
+.trad-filterbar__field--user {
+  flex: 1 1 var(--user-field-width, 240px);
+  min-width: var(--user-field-width, 200px);
+}
+
+.trad-filterbar__field--type {
+  flex: 1 1 var(--type-field-width, 220px);
+  min-width: var(--type-field-width, 200px);
+}
+
+.trad-filterbar__field--status {
+  flex: 1 1 var(--status-field-width, 340px);
+  min-width: var(--status-field-width, 320px);
+}
+
+/* Optional date-range filters. Narrower than the searchable fields since a
+   date input has a fixed footprint. */
+.trad-filterbar__field--date {
+  flex: 0 1 180px;
+  min-width: 160px;
+}
+
+.trad-filterbar__actions {
+  display: flex;
+  gap: var(--trad-space-sm);
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/* Custom multi-select dropdown (fallback when the library Select cannot do
+   reliable multi-selection). Closed by default; opens an absolutely-positioned
+   panel of checkboxes. */
+.trad-field-label {
+  display: block;
+  margin: 0 0 var(--trad-space-sm) 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--trad-text);
+}
+
+.trad-ms {
+  position: relative;
+}
+
+/* The searchable Select must fill its field so the computed width (and the
+   dropdown panel, whose width follows the control) actually applies. */
+.trad-ms__select {
+  display: block;
+  width: 100%;
+}
+
+/* Selected values shown as removable chips below the field. */
+.trad-ms__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--trad-space-sm);
+  margin-top: var(--trad-space-sm);
+}
+
+/* The trigger is a @servicenow/react-components Button; stretch it to fill the
+   field and push the chevron to the trailing edge. */
+.trad-ms__trigger {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.trad-ms__trigger--placeholder {
+  color: var(--trad-text-muted);
+}
+
+.trad-ms__panel {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 15rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--trad-space-sm);
+  padding: var(--trad-space-md);
+  border: 1px solid var(--trad-border);
+  border-radius: var(--trad-radius);
+  background-color: var(--trad-surface);
+  box-shadow: var(--now-static-drop-shadow--md, 0 4px 12px rgba(0, 0, 0, 0.15));
+  box-sizing: border-box;
+}
+
+.trad-ms__empty {
+  color: var(--trad-text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Option rows are Buttons (reliable onClicked) rather than Checkboxes. */
+.trad-ms__option {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.trad-ms__option--selected {
+  background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
+  border-radius: var(--now-static-border-radius--md, 0.25rem);
+}
+
+/* Overflow warning banner above the results table. */
+.trad-results__warning {
+  padding: var(--trad-space-md) var(--trad-space-lg) 0;
+}
+
+/* Results meta */
+.trad-results__meta {
+  padding: var(--trad-space-md) var(--trad-space-lg);
+  color: var(--trad-text-muted);
+  font-size: 0.8125rem;
+  border-bottom: 1px solid var(--trad-border);
+  min-height: 1rem;
+}
+
+/* Results toolbar (export action) above the table. */
+.trad-results__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--trad-space-md) var(--trad-space-lg);
+  border-bottom: 1px solid var(--trad-border);
+}
+
+/* Table */
+.trad-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.trad-table th,
+.trad-table td {
+  padding: var(--trad-space-md) var(--trad-space-lg);
+  border-bottom: 1px solid var(--trad-border);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+.trad-table thead th {
+  background-color: var(--trad-surface-head);
+  font-weight: 600;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+.trad-table tbody tr {
+  background-color: var(--trad-surface);
+}
+
+.trad-table tbody tr:hover {
+  background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
+}
+
+/* Record link in the Number column */
+.trad-link {
+  color: rgb(var(--now-color--primary-2, 0, 103, 131));
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.trad-link:hover {
+  text-decoration: underline;
+}
+
+/* Type badge */
+.trad-type-badge {
+  display: inline-block;
+  padding: 0.125rem var(--trad-space-sm);
+  border-radius: var(--now-static-border-radius--md, 0.25rem);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.trad-type-badge--task {
+  background-color: var(--trad-badge-task-bg);
+  color: var(--trad-badge-task-fg);
+}
+
+.trad-type-badge--resource {
+  background-color: var(--trad-badge-res-bg);
+  color: var(--trad-badge-res-fg);
+}
+
+/* Pagination */
+.trad-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--trad-space-md);
+  padding: var(--trad-space-md) var(--trad-space-lg);
+  border-top: 1px solid var(--trad-border);
+  background-color: var(--trad-surface);
+}
+
+.trad-pagination__size {
+  display: flex;
+  align-items: center;
+  min-width: 7rem;
+}
+
+.trad-pagination__info {
+  flex: 1 1 auto;
+  text-align: center;
+  color: var(--trad-text-muted);
+  font-size: 0.8125rem;
+}
+
+.trad-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--trad-space-sm);
+}
+
+/* Loading / empty / error states */
+.trad-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--trad-space-xl);
+  min-height: 8rem;
+}
+
+@media (max-width: 768px) {
+  .trad-filterbar__field,
+  .trad-filterbar__field--group,
+  .trad-filterbar__field--user,
+  .trad-filterbar__field--type,
+  .trad-filterbar__field--status,
+  .trad-filterbar__field--date {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .trad-filterbar__grid {
+    grid-template-columns: 1fr;
+  }
+  .trad-filterbar__actions {
+    width: 100%;
+  }
+  .trad-pagination {
+    justify-content: center;
+  }
+  .trad-pagination__info {
+    order: -1;
+    flex: 1 1 100%;
+  }
+}

@@ -1,0 +1,161 @@
+:root {
+    --snx-surface: rgb(var(--now-container-card--background-color, 255, 255, 255));
+    --snx-border: rgb(var(--now-container-card--border-color, 207, 213, 215));
+    --snx-radius: var(--now-container-card--border-radius, 8px);
+    --snx-text: rgb(var(--now-color_text--primary, 16, 23, 26));
+    --snx-text-muted: rgb(var(--now-color_text--secondary, 75, 85, 89));
+}
+
+.sla-dashboard {
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: var(--now-static-space--xl, 1.5rem);
+    background-color: rgb(var(--now-color_background--secondary, 245, 246, 247));
+    font-family: var(--now-font-family, Lato, Arial, sans-serif);
+    color: var(--snx-text);
+}
+
+.sla-header {
+    margin: 0 0 var(--now-static-space--lg, 1rem) 0;
+}
+
+.sla-subtitle {
+    margin: var(--now-static-space--xs, 0.25rem) 0 0 0;
+    color: var(--snx-text-muted);
+    font-size: 0.875rem;
+    line-height: var(--now-static-line-height, 1.4);
+    max-width: 920px;
+}
+
+/* Elevated surface used for the filter bar and results, matching Horizon cards. */
+.sla-card {
+    background-color: var(--snx-surface);
+    border: 1px solid var(--snx-border);
+    border-radius: var(--snx-radius);
+    box-shadow: var(--now-static-drop-shadow--sm);
+    padding: var(--now-static-space--lg, 1rem);
+    margin-bottom: var(--now-static-space--lg, 1rem);
+}
+
+.sla-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--now-static-space--lg, 1rem);
+}
+
+.sla-filter-control {
+    min-width: 200px;
+    flex: 0 1 auto;
+}
+
+.sla-filter-group {
+    min-width: 300px;
+    flex: 1 1 300px;
+}
+
+.sla-filter-apply {
+    flex: 0 0 auto;
+    padding-bottom: 2px;
+}
+
+/* Forces this control onto its own row within the flex filter bar. */
+.sla-filter-break {
+    flex: 0 0 100%;
+}
+
+.sla-filter-checkbox {
+    display: flex;
+    align-items: center;
+    min-width: auto;
+    margin-top: var(--now-static-space--xs, 0.25rem);
+}
+
+.sla-results {
+    background-color: var(--snx-surface);
+    border: 1px solid var(--snx-border);
+    border-radius: var(--snx-radius);
+    box-shadow: var(--now-static-drop-shadow--sm);
+    padding: var(--now-static-space--lg, 1rem);
+}
+
+.sla-results-note {
+    margin: var(--now-static-space--xs, 0.25rem) 0 var(--now-static-space--md, 0.75rem) 0;
+    color: var(--snx-text-muted);
+    font-size: 0.8125rem;
+}
+
+.sla-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--now-static-space--lg, 1rem);
+    margin: var(--now-static-space--sm, 0.5rem) 0 var(--now-static-space--md, 0.75rem) 0;
+    flex-wrap: wrap;
+}
+
+.sla-toolbar-bottom {
+    margin: var(--now-static-space--lg, 1rem) 0 0 0;
+}
+
+.sla-cap-alert {
+    margin: var(--now-static-space--sm, 0.5rem) 0 var(--now-static-space--md, 0.75rem) 0;
+}
+
+.sla-pager {
+    display: flex;
+    align-items: center;
+    gap: var(--now-static-space--sm, 0.5rem);
+}
+
+.sla-pager-info {
+    font-size: 0.8125rem;
+    color: var(--snx-text-muted);
+    white-space: nowrap;
+}
+
+.sla-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    border: 1px solid var(--snx-border);
+    border-radius: var(--now-static-border-radius--md, 0.25rem);
+    overflow: hidden;
+}
+
+.sla-table thead th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--snx-text);
+    background-color: rgb(var(--now-color_background--tertiary, 226, 229, 231));
+    padding: var(--now-static-space--xs, 0.25rem) var(--now-static-space--sm, 0.5rem);
+    border-bottom: 1px solid var(--snx-border);
+    white-space: nowrap;
+}
+
+.sla-table tbody td {
+    padding: var(--now-static-space--sm, 0.5rem) var(--now-static-space--md, 0.75rem);
+    border-bottom: 1px solid var(--snx-border);
+    vertical-align: top;
+    color: var(--snx-text);
+    background-color: rgb(var(--now-color_background--primary, 255, 255, 255));
+}
+
+.sla-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.sla-table tbody tr:hover td {
+    background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
+}
+
+.sla-cell-number {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Highlight when the group at breach differs from the current group. */
+.sla-cell-moved {
+    color: rgb(var(--now-indicator--primary_warning--background-color, 184, 83, 27));
+    font-weight: 600;
+}

@@ -53,3 +53,42 @@ CrossScopePrivilege({
     targetScope: 'global',
     targetType: 'sys_db_object',
 })
+
+// The "SLA Breach by Team" Scripted REST operation reads these global tables
+// server-side (task_sla breached SLAs, metric_instance assignment-group history,
+// incident, and sys_user_group for group-name resolution).
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_task_sla'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'task_sla',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})
+
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_metric_instance'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'metric_instance',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})
+
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_incident'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'incident',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})
+
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_user_group'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'sys_user_group',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})
