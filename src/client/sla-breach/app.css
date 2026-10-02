@@ -37,38 +37,88 @@
     margin-bottom: var(--now-static-space--lg, 1rem);
 }
 
-.sla-filter-bar {
+/* ---------------------------------------------------------------------------
+ * Filter bar — TRD-style grouped layout. Re-prefixed from the Task Resource
+ * Dashboard's trad- filter rules to sla-, using this report's own sla-/--snx-
+ * design tokens. The elevated card is .sla-card (shared); only the inner
+ * filterbar grid/section/actions layout is defined here. Hosts standard
+ * @servicenow/react-components (TypeaheadMulti, DateTime, Button, Checkbox) —
+ * the controls theme themselves.
+ * ------------------------------------------------------------------------- */
+.sla-filterbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--now-static-space--lg, 1rem);
+}
+
+/* One logical row of filters in the grouped layout. */
+.sla-filterbar__row {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     gap: var(--now-static-space--lg, 1rem);
 }
 
-.sla-filter-control {
-    min-width: 200px;
-    flex: 0 1 auto;
+/* Searchable multi-selects: equal 2-col grid. */
+.sla-filterbar__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 360px));
+    justify-content: start;
+    row-gap: var(--now-static-space--lg, 1rem);
+    column-gap: var(--now-static-space--md, 0.75rem);
 }
 
-.sla-filter-group {
-    min-width: 300px;
-    flex: 1 1 300px;
+/* The standard TypeaheadMulti renders at its own intrinsic width; make it fill
+   its grid cell so each field occupies the full (capped) column. */
+.sla-filterbar__field now-typeahead-multi {
+    display: block;
+    width: 100%;
 }
 
-.sla-filter-apply {
-    flex: 0 0 auto;
-    padding-bottom: 2px;
-}
-
-/* Forces this control onto its own row within the flex filter bar. */
-.sla-filter-break {
-    flex: 0 0 100%;
-}
-
-.sla-filter-checkbox {
+/* A titled filter section (e.g. Dates). */
+.sla-filterbar__section {
     display: flex;
-    align-items: center;
-    min-width: auto;
-    margin-top: var(--now-static-space--xs, 0.25rem);
+    flex-direction: column;
+    gap: var(--now-static-space--sm, 0.5rem);
+}
+
+.sla-filterbar__section-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--snx-text);
+}
+
+.sla-filterbar__field {
+    flex: 1 1 240px;
+    min-width: 200px;
+}
+
+/* Date controls have a fixed footprint, so keep them narrow. */
+.sla-filterbar__field--date {
+    flex: 0 1 180px;
+    min-width: 160px;
+}
+
+.sla-filterbar__actions {
+    display: flex;
+    gap: var(--now-static-space--lg, 1rem);
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .sla-filterbar__field,
+    .sla-filterbar__field--date {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .sla-filterbar__grid {
+        grid-template-columns: 1fr;
+    }
+    .sla-filterbar__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
 }
 
 .sla-results {

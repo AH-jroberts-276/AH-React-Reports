@@ -44,73 +44,85 @@ function toOptions(items: unknown): GroupOption[] {
 // remains wired up; this only controls whether the control is rendered).
 const SHOW_BREACHING_FILTER = false
 
+// TRD-style grouped filter layout. The searchable multi-selects sit in a
+// labeled grid, the created-date range sits in a titled "Dates" section, and
+// the Apply action plus exclude toggle live in a trailing actions area. This is
+// purely a container/section reorganization — every control keeps its original
+// props, placeholders, helperContent, and handlers.
 export default function FilterBar(props: FilterBarProps) {
     const canApply = props.selectedGroups.length > 0 || props.selectedBreaching.length > 0
     return (
-        <div className="sla-filter-bar">
-            <div className="sla-filter-control sla-filter-group">
-                <TypeaheadMulti
-                    label="Assignment groups"
-                    placeholder="Search and select one or more groups…"
-                    search="contains"
-                    disableAutoClose
-                    items={props.groups}
-                    selectedItems={props.selectedGroups}
-                    helperContent="Incidents currently assigned to these groups. Active groups with the ITIL role."
-                    onSelectedItemsSet={(e) => props.onGroupsSelected(toOptions(e.detail.payload.value))}
-                />
-            </div>
-            {SHOW_BREACHING_FILTER && (
-                <div className="sla-filter-control sla-filter-group">
+        <div className="sla-filterbar">
+            <div className="sla-filterbar__grid">
+                <div className="sla-filterbar__field">
                     <TypeaheadMulti
-                        label="Breaching groups"
+                        label="Assignment groups"
                         placeholder="Search and select one or more groups…"
                         search="contains"
                         disableAutoClose
                         items={props.groups}
-                        selectedItems={props.selectedBreaching}
-                        helperContent="Group assigned at the moment of breach (from metric history)."
-                        onSelectedItemsSet={(e) => props.onBreachingSelected(toOptions(e.detail.payload.value))}
+                        selectedItems={props.selectedGroups}
+                        helperContent="Incidents currently assigned to these groups. Active groups with the ITIL role."
+                        onSelectedItemsSet={(e) => props.onGroupsSelected(toOptions(e.detail.payload.value))}
                     />
                 </div>
-            )}
-            <div className="sla-filter-control sla-filter-group">
-                <TypeaheadMulti
-                    label="SLAs (optional)"
-                    optional
-                    placeholder="Any SLA — search and select…"
-                    search="contains"
-                    disableAutoClose
-                    items={props.slas}
-                    selectedItems={props.selectedSlas}
-                    helperContent="Limit results to one or more SLA definitions."
-                    onSelectedItemsSet={(e) => props.onSlasSelected(toOptions(e.detail.payload.value))}
-                />
+                {SHOW_BREACHING_FILTER && (
+                    <div className="sla-filterbar__field">
+                        <TypeaheadMulti
+                            label="Breaching groups"
+                            placeholder="Search and select one or more groups…"
+                            search="contains"
+                            disableAutoClose
+                            items={props.groups}
+                            selectedItems={props.selectedBreaching}
+                            helperContent="Group assigned at the moment of breach (from metric history)."
+                            onSelectedItemsSet={(e) => props.onBreachingSelected(toOptions(e.detail.payload.value))}
+                        />
+                    </div>
+                )}
+                <div className="sla-filterbar__field">
+                    <TypeaheadMulti
+                        label="SLAs (optional)"
+                        optional
+                        placeholder="Any SLA — search and select…"
+                        search="contains"
+                        disableAutoClose
+                        items={props.slas}
+                        selectedItems={props.selectedSlas}
+                        helperContent="Limit results to one or more SLA definitions."
+                        onSelectedItemsSet={(e) => props.onSlasSelected(toOptions(e.detail.payload.value))}
+                    />
+                </div>
             </div>
-            <div className="sla-filter-control">
-                <DateTime
-                    label="Created from"
-                    type="date"
-                    format="MM-dd-yyyy"
-                    optional
-                    value={isoToDisplay(props.createdFrom)}
-                    onValueSet={(e) => props.onCreatedFrom(displayToIso(e.detail.payload.value || ''))}
-                />
+
+            <div className="sla-filterbar__section">
+                <span className="sla-filterbar__section-label">Dates</span>
+                <div className="sla-filterbar__row">
+                    <div className="sla-filterbar__field sla-filterbar__field--date">
+                        <DateTime
+                            label="Created from"
+                            type="date"
+                            format="MM-dd-yyyy"
+                            optional
+                            value={isoToDisplay(props.createdFrom)}
+                            onValueSet={(e) => props.onCreatedFrom(displayToIso(e.detail.payload.value || ''))}
+                        />
+                    </div>
+                    <div className="sla-filterbar__field sla-filterbar__field--date">
+                        <DateTime
+                            label="Created to"
+                            type="date"
+                            format="MM-dd-yyyy"
+                            optional
+                            value={isoToDisplay(props.createdTo)}
+                            onValueSet={(e) => props.onCreatedTo(displayToIso(e.detail.payload.value || ''))}
+                        />
+                    </div>
+                </div>
             </div>
-            <div className="sla-filter-control">
-                <DateTime
-                    label="Created to"
-                    type="date"
-                    format="MM-dd-yyyy"
-                    optional
-                    value={isoToDisplay(props.createdTo)}
-                    onValueSet={(e) => props.onCreatedTo(displayToIso(e.detail.payload.value || ''))}
-                />
-            </div>
-            <div className="sla-filter-apply">
+
+            <div className="sla-filterbar__actions">
                 <Button label="Apply" variant="primary" disabled={props.loading || !canApply} onClicked={props.onApply} />
-            </div>
-            <div className="sla-filter-break sla-filter-checkbox">
                 <Checkbox label="Exclude Groups' Breaches" checked={props.excludeGroup} onCheckedSet={(e) => props.onExcludeGroup(!!e.detail.payload.value)} />
             </div>
         </div>

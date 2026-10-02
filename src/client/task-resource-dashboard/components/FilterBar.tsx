@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { DateTime, DateTimeValueSet } from '@servicenow/react-components/DateTime';
 import { Button } from '@servicenow/react-components/Button';
-import { SearchableMultiSelect } from './SearchableMultiSelect';
+import { MultiSelect } from './MultiSelect';
 import { Option } from '../services/api';
 import { TYPE_REGISTRY } from '../utils/constants';
 import { readDateValue, toIsoDate, toDisplayDate } from '../utils/dates';
@@ -50,7 +50,7 @@ export function FilterBar(props: Props) {
         <div className="trad-filterbar">
             <div className="trad-filterbar__grid">
                 <div className="trad-filterbar__field trad-filterbar__field--group">
-                    <SearchableMultiSelect
+                    <MultiSelect
                         label="Assignment group"
                         options={props.groups}
                         selected={props.groupIds}
@@ -59,7 +59,7 @@ export function FilterBar(props: Props) {
                     />
                 </div>
                 <div className="trad-filterbar__field trad-filterbar__field--user">
-                    <SearchableMultiSelect
+                    <MultiSelect
                         label="User"
                         options={props.users}
                         selected={props.userIds}
@@ -68,7 +68,7 @@ export function FilterBar(props: Props) {
                     />
                 </div>
                 <div className="trad-filterbar__field trad-filterbar__field--type">
-                    <SearchableMultiSelect
+                    <MultiSelect
                         label="Work type"
                         options={TYPE_OPTIONS}
                         selected={props.typeSel}
@@ -76,7 +76,7 @@ export function FilterBar(props: Props) {
                     />
                 </div>
                 <div className="trad-filterbar__field trad-filterbar__field--status">
-                    <SearchableMultiSelect
+                    <MultiSelect
                         label="Status/State"
                         addPlaceholder={props.statuses.length ? 'Search & add a status…' : 'No statuses available'}
                         options={props.statuses}

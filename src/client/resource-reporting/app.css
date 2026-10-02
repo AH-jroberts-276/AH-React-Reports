@@ -44,255 +44,95 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Filter section (recovered from the original report's source map).
- * Native elements styled with --now-* design tokens (with fallbacks).
+ * Filter section — TRD-style grouped card. Re-prefixed verbatim from the Task
+ * Resource Dashboard's trad- filter rules to rr-, using this report's own rr-
+ * design-token variables. Hosts standard @servicenow/react-components
+ * (TypeaheadMulti, DateTime, Select, Button); only the card/grid/section
+ * layout is styled here — the controls theme themselves.
  * ------------------------------------------------------------------------- */
-.filters-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
-    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
+.rr-filter-card {
+    background-color: rgb(var(--rr-surface));
+    border: 1px solid rgb(var(--rr-border));
     border-radius: 8px;
-    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
+    box-shadow: var(--now-static-drop-shadow--sm, 0 1px 2px rgba(0, 0, 0, 0.08));
+    padding: 1rem;
 }
 
-.filters-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.filters-row-secondary {
-    align-items: flex-end;
-}
-
-.filter-field {
+.rr-filterbar {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    min-width: 190px;
+    gap: 1rem;
 }
 
-.filter-field-wide {
-    flex: 1 1 100%;
-    min-width: 100%;
-}
-
-.filter-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-}
-
-.filter-label-row {
+/* One logical row of filters in the grouped layout. */
+.rr-filterbar__row {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 8px;
+    align-items: flex-end;
+    gap: 1rem;
 }
 
-.filter-optional {
-    font-size: 13px;
-    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
+/* Assignment groups / Users: equal 2-col grid, shown simultaneously. */
+.rr-filterbar__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 360px));
+    justify-content: start;
+    row-gap: 1rem;
+    column-gap: 0.75rem;
 }
 
-.filter-action {
-    min-width: auto;
-}
-
-/* Search-by toggle */
-.search-mode-toggle {
-    display: inline-flex;
-    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.toggle-btn {
-    padding: 4px 12px;
-    font-size: 13px;
-    font-family: inherit;
-    border: none;
-    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
-    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
-    cursor: pointer;
-    transition: background-color .15s, color .15s;
-}
-
-.toggle-btn:not(:last-child) {
-    border-right: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
-}
-
-.toggle-btn.active {
-    background-color: rgb(var(--now-color--interactive-primary, 42, 101, 161));
-    color: rgb(var(--now-color--always-white, 255, 255, 255));
-    font-weight: 600;
-}
-
-/* Multi-select chip picker (UserPicker / GroupPicker) */
-.user-picker {
-    position: relative;
+/* The standard TypeaheadMulti renders at its own intrinsic width; make it fill
+   its grid cell so each field occupies the full (capped) column. */
+.rr-filterbar__field now-typeahead-multi {
+    display: block;
     width: 100%;
 }
 
-.user-picker-input-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 6px 10px;
-    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
-    border-radius: 4px;
-    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
-    min-height: 36px;
-    align-items: center;
-    cursor: text;
-}
-
-.user-picker-input-area:focus-within {
-    border-color: rgb(var(--now-color--focus-ring, 0, 128, 163));
-    box-shadow: 0 0 0 1px rgb(var(--now-color--focus-ring, 0, 128, 163));
-}
-
-.user-picker-input {
-    border: none;
-    outline: none;
-    flex: 1;
-    min-width: 120px;
-    font-size: 14px;
-    font-family: inherit;
-    background: transparent;
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-    padding: 2px 0;
-}
-
-.user-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    background-color: rgb(var(--now-color--background-tertiary, 246, 247, 248));
-    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
-    font-size: 13px;
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-    white-space: nowrap;
-}
-
-.user-chip-remove {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: transparent;
-    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
-    font-size: 14px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.user-chip-remove:hover {
-    background-color: rgb(var(--now-color--divider-secondary, 214, 217, 220));
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-}
-
-.user-picker-dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    z-index: 20;
-    max-height: 260px;
-    overflow-y: auto;
-    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
-    border-radius: 4px;
-    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.user-picker-item {
+/* A titled filter section (e.g. Dates). */
+.rr-filterbar__section {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 8px 12px;
-    font-size: 14px;
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-    cursor: pointer;
+    gap: 0.5rem;
 }
 
-.user-picker-item:hover {
-    background-color: rgb(var(--now-color--background-tertiary, 246, 247, 248));
-}
-
-.user-picker-item.loading,
-.user-picker-item.no-results {
-    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
-    cursor: default;
-}
-
-.user-picker-item.loading:hover,
-.user-picker-item.no-results:hover {
-    background-color: transparent;
-}
-
-.user-picker-item-name {
-    font-size: 14px;
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-}
-
-.user-picker-item-email {
-    font-size: 12px;
-    color: rgb(var(--now-color--text-secondary, 72, 79, 84));
-}
-
-/* Native date inputs and granularity select */
-.sn-input,
-.sn-select {
-    padding: 7px 10px;
-    font-size: 14px;
-    font-family: inherit;
-    border: 1px solid rgb(var(--now-color--divider-secondary, 214, 217, 220));
-    border-radius: 4px;
-    background-color: rgb(var(--now-color--background-primary, 255, 255, 255));
-    color: rgb(var(--now-color--text-primary, 22, 27, 28));
-    min-height: 36px;
-    box-sizing: border-box;
-}
-
-.sn-input:focus,
-.sn-select:focus {
-    outline: none;
-    border-color: rgb(var(--now-color--focus-ring, 0, 128, 163));
-    box-shadow: 0 0 0 1px rgb(var(--now-color--focus-ring, 0, 128, 163));
-}
-
-/* Primary action button */
-.sn-button-primary {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-family: inherit;
+.rr-filterbar__section-label {
+    font-size: 0.875rem;
     font-weight: 600;
-    border: none;
-    border-radius: 4px;
-    background-color: rgb(var(--now-color--interactive-primary, 42, 101, 161));
-    color: rgb(var(--now-color--always-white, 255, 255, 255));
-    min-height: 36px;
-    cursor: pointer;
-    transition: background-color .15s;
+    color: rgb(var(--rr-text));
 }
 
-.sn-button-primary:hover:not(:disabled) {
-    background-color: rgb(var(--now-color--interactive-primary-hover, 32, 81, 141));
+.rr-filterbar__field {
+    flex: 1 1 240px;
+    min-width: 200px;
 }
 
-.sn-button-primary:disabled {
-    opacity: 0.5;
-    cursor: default;
+/* Date / granularity controls have a fixed footprint, so keep them narrow. */
+.rr-filterbar__field--date {
+    flex: 0 1 180px;
+    min-width: 160px;
+}
+
+.rr-filterbar__actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+}
+
+@media (max-width: 768px) {
+    .rr-filterbar__field,
+    .rr-filterbar__field--date {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .rr-filterbar__grid {
+        grid-template-columns: 1fr;
+    }
+    .rr-filterbar__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
 }
 
 /* Results card */

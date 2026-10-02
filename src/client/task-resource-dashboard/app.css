@@ -76,8 +76,17 @@
 /* Assignment group / User / Type / Status: equal 2x2 grid. */
 .trad-filterbar__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--trad-space-lg);
+  grid-template-columns: repeat(2, minmax(240px, 360px));
+  justify-content: start;
+  row-gap: var(--trad-space-lg);
+  column-gap: var(--trad-space-md);
+}
+
+/* The standard TypeaheadMulti renders at its own intrinsic width; make it fill
+   its grid cell so each field occupies the full (capped) column. */
+.trad-filterbar__field now-typeahead-multi {
+  display: block;
+  width: 100%;
 }
 
 /* A titled filter section (e.g. Dates). */
@@ -141,71 +150,6 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--trad-text);
-}
-
-.trad-ms {
-  position: relative;
-}
-
-/* The searchable Select must fill its field so the computed width (and the
-   dropdown panel, whose width follows the control) actually applies. */
-.trad-ms__select {
-  display: block;
-  width: 100%;
-}
-
-/* Selected values shown as removable chips below the field. */
-.trad-ms__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--trad-space-sm);
-  margin-top: var(--trad-space-sm);
-}
-
-/* The trigger is a @servicenow/react-components Button; stretch it to fill the
-   field and push the chevron to the trailing edge. */
-.trad-ms__trigger {
-  width: 100%;
-  justify-content: space-between;
-}
-
-.trad-ms__trigger--placeholder {
-  color: var(--trad-text-muted);
-}
-
-.trad-ms__panel {
-  position: absolute;
-  z-index: 50;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  max-height: 15rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--trad-space-sm);
-  padding: var(--trad-space-md);
-  border: 1px solid var(--trad-border);
-  border-radius: var(--trad-radius);
-  background-color: var(--trad-surface);
-  box-shadow: var(--now-static-drop-shadow--md, 0 4px 12px rgba(0, 0, 0, 0.15));
-  box-sizing: border-box;
-}
-
-.trad-ms__empty {
-  color: var(--trad-text-muted);
-  font-size: 0.8125rem;
-}
-
-/* Option rows are Buttons (reliable onClicked) rather than Checkboxes. */
-.trad-ms__option {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-.trad-ms__option--selected {
-  background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
-  border-radius: var(--now-static-border-radius--md, 0.25rem);
 }
 
 /* Overflow warning banner above the results table. */
