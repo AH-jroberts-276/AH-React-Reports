@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Loader } from '@servicenow/react-components/Loader';
 import { Alert } from '@servicenow/react-components/Alert';
+import { Button } from '@servicenow/react-components/Button';
 import { ReportResult, ReportRow } from '../services/api';
 import { formatHours, formatUtilization } from '../utils/format';
 import { buildAggregateLink, buildTimeCardLink } from '../utils/links';
+import { buildCsv } from '../utils/csv';
 import { Pagination } from './Pagination';
 
 interface Props {
@@ -83,6 +85,37 @@ export function ResultsView({ loading, error, data, granularity }: Props) {
         setPage(1);
     };
 
+    // Display value for a given column — mirrors what the table cell renders so
+    // the CSV matches the on-screen figures.
+    const cellText = (row: ReportRow, key: SortKey): string => {
+        switch (key) {
+            case 'period':
+                return row.periodLabel;
+            case 'userName':
+                return row.userName || 'Unknown user';
+            case 'utilization':
+                return formatUtilization(row.utilization);
+            default:
+                return formatHours(row[key] as number);
+        }
+    };
+
+    // Export the full sorted result set (not just the current page).
+    const exportCsv = () => {
+        const headers = COLUMNS.map(c => c.label);
+        const dataRows = sorted.map(row => COLUMNS.map(c => cellText(row, c.key)));
+        const content = `\uFEFF${buildCsv(headers, dataRows)}`;
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `resource-time-report-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     if (loading) {
         return <Loader label="Loading report data..." size="lg" announceLabel />;
     }
@@ -111,6 +144,15 @@ export function ResultsView({ loading, error, data, granularity }: Props) {
                     content="Only the first 10,000 rows are shown. Narrow the date range or filters to see all data."
                 />
             )}
+            <div className="rr-results-toolbar">
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    label="Export CSV"
+                    icon="download-outline"
+                    onClicked={exportCsv}
+                />
+            </div>
             <Pagination
                 page={currentPage}
                 pageSize={pageSize}

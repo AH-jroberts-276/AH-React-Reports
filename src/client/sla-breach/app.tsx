@@ -12,6 +12,7 @@ import {
     SortField,
     SortDir,
 } from './services/api'
+import { buildCsv } from './utils/csv'
 import './app.css'
 
 const DEFAULT_PAGE_SIZE = 50
@@ -44,6 +45,7 @@ export default function App() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [result, setResult] = useState<BreachResponse | null>(null)
+    const [exporting, setExporting] = useState(false)
 
     const load = (f: AppliedFilters, off: number, size: number, ob: SortField, od: SortDir) => {
         setLoading(true)
@@ -136,6 +138,55 @@ export default function App() {
         }
     }
 
+    const onExport = () => {
+        if (!applied) {
+            return
+        }
+        setExporting(true)
+        fetchBreaches(applied.groups, applied.breaching, applied.slas, applied.from, applied.to, applied.exclude, {
+            limit: result?.maxResults || 1000,
+            offset: 0,
+            orderBy,
+            orderDir,
+        })
+            .then((response) => {
+                const headers = [
+                    'Incident',
+                    'Assignment group',
+                    'Short description',
+                    'SLA',
+                    'Breached (planned end)',
+                    'Breaching group',
+                ]
+                const dataRows = (response.rows || []).map((row) => [
+                    row.number,
+                    row.assignment_group,
+                    row.short_description,
+                    row.sla,
+                    row.planned_end_time,
+                    row.assigned_group_at_breach,
+                ])
+                let content = '\uFEFF' + buildCsv(headers, dataRows)
+                if (response.capped) {
+                    content +=
+                        '\r\nNote: export truncated to the first ' +
+                        response.maxResults.toLocaleString() +
+                        ' records (server cap).'
+                }
+                const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' })
+                const url = URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.download = `sla-breach-by-team-${new Date().toISOString().slice(0, 10)}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(url)
+            })
+            .catch((e) => setError(String(e && e.message ? e.message : e)))
+            .finally(() => setExporting(false))
+    }
+
     return (
         <div className="sla-dashboard">
             <header className="sla-header">
@@ -177,6 +228,8 @@ export default function App() {
                     onPageSize={onPageSize}
                     onSort={onSort}
                     onGoToOffset={goToOffset}
+                    onExport={onExport}
+                    exporting={exporting}
                 />
             </ErrorBoundary>
         </div>

@@ -135,55 +135,145 @@
     font-size: 0.8125rem;
 }
 
-.sla-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--now-static-space--lg, 1rem);
-    margin: var(--now-static-space--sm, 0.5rem) 0 var(--now-static-space--md, 0.75rem) 0;
-    flex-wrap: wrap;
-}
-
-.sla-toolbar-bottom {
-    margin: var(--now-static-space--lg, 1rem) 0 0 0;
-}
-
 .sla-cap-alert {
     margin: var(--now-static-space--sm, 0.5rem) 0 var(--now-static-space--md, 0.75rem) 0;
 }
 
-.sla-pager {
+/* ---------------------------------------------------------------------------
+ * Results toolbar + standardized table navigation. Re-prefixed from the
+ * Resource Reporting rr- table/sort/pager rules to sla-, using this report's
+ * own --snx- and now- design tokens.
+ * ------------------------------------------------------------------------- */
+
+/* Right-aligned Export CSV toolbar, above the table. */
+.sla-results-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: var(--now-static-space--sm, 0.5rem) 0 var(--now-static-space--md, 0.75rem) 0;
+}
+
+/* "Show [select] entries" (left) + "Showing X-Y of N" (right), below table. */
+.sla-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--now-static-space--md, 0.75rem);
+    margin: var(--now-static-space--md, 0.75rem) 0 var(--now-static-space--sm, 0.5rem) 0;
+}
+
+.sla-page-size {
     display: flex;
     align-items: center;
     gap: var(--now-static-space--sm, 0.5rem);
+    color: var(--snx-text-muted);
+    font-size: 0.8125rem;
 }
 
-.sla-pager-info {
-    font-size: 0.8125rem;
+.sla-showing {
     color: var(--snx-text-muted);
-    white-space: nowrap;
+    font-size: 0.8125rem;
+}
+
+/* Boxed, centered pager. */
+.sla-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--now-static-space--xs, 0.25rem);
+    margin: var(--now-static-space--sm, 0.5rem) 0 0 0;
+}
+
+.sla-pg-btn {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 var(--now-static-space--sm, 0.5rem);
+    margin: 0;
+    border: 1px solid var(--snx-border);
+    border-radius: var(--now-static-border-radius--md, 0.25rem);
+    background-color: var(--snx-surface);
+    color: var(--snx-text);
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.sla-pg-btn:hover:not(:disabled) {
+    background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
+}
+
+.sla-pg-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.sla-pager__status {
+    padding: 0 var(--now-static-space--md, 0.75rem);
+    color: var(--snx-text-muted);
+    font-size: 0.8125rem;
+}
+
+.sla-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--snx-border);
+    border-radius: var(--now-static-border-radius--md, 0.25rem);
 }
 
 .sla-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8125rem;
-    border: 1px solid var(--snx-border);
-    border-radius: var(--now-static-border-radius--md, 0.25rem);
-    overflow: hidden;
+    color: var(--snx-text);
 }
 
-.sla-table thead th {
+.sla-table thead {
+    background-color: rgb(var(--now-color_background--tertiary, 226, 229, 231));
+}
+
+.sla-th {
+    padding: 0;
     text-align: left;
     font-weight: 600;
     color: var(--snx-text);
     background-color: rgb(var(--now-color_background--tertiary, 226, 229, 231));
-    padding: var(--now-static-space--xs, 0.25rem) var(--now-static-space--sm, 0.5rem);
     border-bottom: 1px solid var(--snx-border);
     white-space: nowrap;
 }
 
-.sla-table tbody td {
+/* Plain (non-sortable) header labels still need padding since there's no button. */
+.sla-th:not(:has(.sla-sort)) {
+    padding: var(--now-static-space--sm, 0.5rem) var(--now-static-space--md, 0.75rem);
+}
+
+/* Clean sort header button (reset native button styling). */
+.sla-sort {
+    display: flex;
+    align-items: center;
+    gap: var(--now-static-space--xs, 0.25rem);
+    width: 100%;
+    margin: 0;
+    border: none;
+    background: transparent;
+    padding: var(--now-static-space--sm, 0.5rem) var(--now-static-space--md, 0.75rem);
+    font: inherit;
+    font-weight: 600;
+    color: var(--snx-text);
+    cursor: pointer;
+    text-align: left;
+}
+
+.sla-sort:hover {
+    background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
+}
+
+.sla-sort__ind {
+    color: var(--snx-text-muted);
+    font-size: 0.8em;
+    line-height: 1;
+}
+
+.sla-td {
     padding: var(--now-static-space--sm, 0.5rem) var(--now-static-space--md, 0.75rem);
     border-bottom: 1px solid var(--snx-border);
     vertical-align: top;
@@ -191,12 +281,22 @@
     background-color: rgb(var(--now-color_background--primary, 255, 255, 255));
 }
 
-.sla-table tbody tr:last-child td {
+.sla-table tbody tr:last-child .sla-td {
     border-bottom: none;
 }
 
-.sla-table tbody tr:hover td {
+.sla-table tbody tr:hover .sla-td {
     background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
+}
+
+/* Drill-down links (open the underlying list/record in a new tab). */
+.sla-link {
+    color: rgb(var(--now-color--interactive-primary, 42, 101, 161));
+    text-decoration: none;
+}
+
+.sla-link:hover {
+    text-decoration: underline;
 }
 
 .sla-cell-number {

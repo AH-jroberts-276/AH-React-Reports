@@ -1,11 +1,12 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Loader } from '@servicenow/react-components/Loader';
 import { Alert } from '@servicenow/react-components/Alert';
 import { Button } from '@servicenow/react-components/Button';
-import { Select, SelectSelectedItemSet } from '@servicenow/react-components/Select';
 import { DashboardRow } from '../services/api';
-import { COLUMNS, PAGE_SIZE_ITEMS, DATE_SORT_FIELD, Column } from '../utils/constants';
+import { COLUMNS, DATE_SORT_FIELD, Column } from '../utils/constants';
 import { csvField } from '../utils/csv';
+import { buildRecordLink, buildTaskLink } from '../utils/links';
+import { Pagination } from './Pagination';
 
 interface Props {
     rows: DashboardRow[];
@@ -75,8 +76,6 @@ export function ResultsTable({
     const currentPage = Math.min(page, totalPages);
     const start = (currentPage - 1) * pageSize;
     const pageRows = sortedRows.slice(start, start + pageSize);
-    const rangeStart = total === 0 ? 0 : start + 1;
-    const rangeEnd = Math.min(start + pageSize, total);
 
     const handleSort = (key: string) => {
         if (key === effectiveSortKey) {
@@ -86,11 +85,6 @@ export function ResultsTable({
             setSortDir('asc');
         }
     };
-
-    const handlePageSize = useCallback<SelectSelectedItemSet>(
-        event => onPageSizeChange(Number(event.detail.payload.value)),
-        [onPageSizeChange],
-    );
 
     const exportCsv = () => {
         const lines = [visibleColumns.map(c => csvField(c.label)).join(',')];
@@ -161,7 +155,7 @@ export function ResultsTable({
             return (
                 <a
                     className="trad-link"
-                    href={`/${row.table}.do?sys_id=${row.id}`}
+                    href={buildRecordLink(row.table, row.id)}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -173,7 +167,7 @@ export function ResultsTable({
             return row.taskId ? (
                 <a
                     className="trad-link"
-                    href={`/task.do?sys_id=${row.taskId}`}
+                    href={buildTaskLink(row.taskId)}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -193,70 +187,56 @@ export function ResultsTable({
                     <Alert status="warning" header="Results truncated" content={overflowMessage} />
                 </div>
             )}
-            <div className="trad-results__toolbar">
+            <div className="trad-results-toolbar">
                 <Button variant="secondary" size="sm" label="Export CSV" icon="download-outline" onClicked={exportCsv} />
             </div>
-            <table className="trad-table">
-                <thead>
-                    <tr>
-                        {visibleColumns.map(col => {
-                            const active = col.key === effectiveSortKey;
-                            const indicator = active ? (effectiveSortDir === 'asc' ? ' ↑' : ' ↓') : '';
-                            return (
-                                <th
-                                    key={col.key}
-                                    aria-sort={active ? (effectiveSortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={() => handleSort(col.key)}
-                                >
-                                    {col.label}
-                                    {indicator}
-                                </th>
-                            );
-                        })}
-                    </tr>
-                </thead>
-                <tbody>
-                    {pageRows.map(row => (
-                        <tr key={`${row.table}:${row.id}`}>
-                            {visibleColumns.map(col => (
-                                <td key={col.key}>{renderCell(row, col)}</td>
-                            ))}
+            <div className="trad-table-wrap">
+                <table className="trad-table">
+                    <thead>
+                        <tr>
+                            {visibleColumns.map(col => {
+                                const active = col.key === effectiveSortKey;
+                                return (
+                                    <th
+                                        key={col.key}
+                                        className="trad-th"
+                                        aria-sort={active ? (effectiveSortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                                    >
+                                        <button
+                                            type="button"
+                                            className="trad-sort"
+                                            onClick={() => handleSort(col.key)}
+                                        >
+                                            <span className="trad-sort__label">{col.label}</span>
+                                            <span className="trad-sort__ind" aria-hidden="true">
+                                                {active ? (effectiveSortDir === 'asc' ? '↑' : '↓') : '⇅'}
+                                            </span>
+                                        </button>
+                                    </th>
+                                );
+                            })}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className="trad-pagination">
-                <div className="trad-pagination__size">
-                    <Select
-                        label="Per page"
-                        items={PAGE_SIZE_ITEMS}
-                        selectedItem={String(pageSize)}
-                        onSelectedItemSet={handlePageSize}
-                    />
-                </div>
-                <div className="trad-pagination__info">
-                    {`${rangeStart}\u2013${rangeEnd} of ${total} \u00b7 Page ${currentPage} of ${totalPages}`}
-                </div>
-                <div className="trad-pagination__controls">
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        label="Previous"
-                        icon="arrow-left-outline"
-                        disabled={currentPage <= 1}
-                        onClicked={() => onPageChange(currentPage - 1)}
-                    />
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        label="Next"
-                        icon="arrow-right-outline"
-                        disabled={currentPage >= totalPages}
-                        onClicked={() => onPageChange(currentPage + 1)}
-                    />
-                </div>
+                    </thead>
+                    <tbody>
+                        {pageRows.map(row => (
+                            <tr key={`${row.table}:${row.id}`}>
+                                {visibleColumns.map(col => (
+                                    <td key={col.key} className="trad-td">
+                                        {renderCell(row, col)}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
+            <Pagination
+                page={currentPage}
+                pageSize={pageSize}
+                total={total}
+                onPageChange={onPageChange}
+                onPageSizeChange={onPageSizeChange}
+            />
         </>
     );
 }

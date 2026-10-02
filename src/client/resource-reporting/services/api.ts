@@ -81,6 +81,32 @@ export async function searchUsers(term: string): Promise<UserOption[]> {
     return (data.result ?? []).map(r => ({ sysId: r.sys_id, name: r.name, email: r.email }));
 }
 
+export async function searchGroupMembers(term: string, groupSysIds: string[]): Promise<UserOption[]> {
+    if (!groupSysIds.length || term.length < 2) {
+        return [];
+    }
+    const query =
+        `group.active=true^groupIN${groupSysIds.join(',')}` +
+        `^user.active=true^user.nameLIKE${term}^ORDERBYuser.name`;
+    const url =
+        `/api/now/table/sys_user_grmember?sysparm_query=${encodeURIComponent(query)}` +
+        `&sysparm_fields=${encodeURIComponent('user.sys_id,user.name,user.email')}` +
+        `&sysparm_limit=20`;
+    const data = await fetchJson<
+        TableResponse<{ 'user.sys_id': string; 'user.name': string; 'user.email'?: string }>
+    >(url);
+    // A user can belong to multiple selected groups; de-duplicate by sys_id.
+    const seen = new Set<string>();
+    const out: UserOption[] = [];
+    for (const r of data.result ?? []) {
+        const sysId = r['user.sys_id'];
+        if (!sysId || seen.has(sysId)) continue;
+        seen.add(sysId);
+        out.push({ sysId, name: r['user.name'], email: r['user.email'] });
+    }
+    return out;
+}
+
 export async function searchGroups(term: string): Promise<GroupOption[]> {
     if (term.length < 2) {
         return [];

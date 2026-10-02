@@ -10,15 +10,14 @@
 }
 
 .rr-app {
-    margin: 0 auto;
-    max-width: 1200px;
+    margin: 0;
     padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
     color: rgb(var(--rr-text));
     font-family: var(--now-font-family, "Source Sans Pro", Arial, sans-serif);
-    background-color: rgb(var(--rr-surface));
+    background-color: rgb(var(--rr-surface-alt));
     min-height: 100%;
     box-sizing: border-box;
 }
@@ -112,6 +111,21 @@
     min-width: 160px;
 }
 
+/* Granularity select: wider than the date fields so option labels (Weekly /
+   Monthly) render on a single line rather than wrapping. */
+.rr-filterbar__field--granularity {
+    flex: 0 1 240px;
+    min-width: 220px;
+}
+
+/* The standard Select renders at its own intrinsic width; make the now-select
+   fill its grid cell so the trigger (and its width:"target" options popover)
+   span the full column. */
+.rr-filterbar__field--granularity now-select {
+    display: block;
+    width: 100%;
+}
+
 .rr-filterbar__actions {
     display: flex;
     gap: 0.5rem;
@@ -122,7 +136,8 @@
 
 @media (max-width: 768px) {
     .rr-filterbar__field,
-    .rr-filterbar__field--date {
+    .rr-filterbar__field--date,
+    .rr-filterbar__field--granularity {
         flex: 1 1 100%;
         min-width: 0;
     }
@@ -144,6 +159,11 @@
     border: 1px solid rgb(var(--rr-border));
     border-radius: 8px;
     background-color: rgb(var(--rr-surface));
+}
+
+.rr-results-toolbar {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .rr-table-toolbar {

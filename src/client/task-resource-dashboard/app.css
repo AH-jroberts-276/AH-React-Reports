@@ -166,42 +166,122 @@
   min-height: 1rem;
 }
 
-/* Results toolbar (export action) above the table. */
-.trad-results__toolbar {
+/* Results toolbar (Export CSV action), right-aligned above the table. */
+.trad-results-toolbar {
   display: flex;
   justify-content: flex-end;
   padding: var(--trad-space-md) var(--trad-space-lg);
-  border-bottom: 1px solid var(--trad-border);
 }
 
-/* Table */
+/* Page-size + "Showing X-Y of N entries" row (rendered by Pagination). */
+.trad-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--trad-space-md);
+  padding: var(--trad-space-md) var(--trad-space-lg);
+}
+
+.trad-page-size {
+  display: flex;
+  align-items: center;
+  gap: var(--trad-space-sm);
+  color: var(--trad-text-muted);
+  font-size: 0.8125rem;
+}
+
+.trad-showing {
+  color: var(--trad-text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Scrollable, bordered table container. */
+.trad-table-wrap {
+  overflow-x: auto;
+  margin: 0 var(--trad-space-lg);
+  border: 1px solid var(--trad-border);
+  border-radius: 6px;
+}
+
 .trad-table {
   width: 100%;
   border-collapse: collapse;
-}
-
-.trad-table th,
-.trad-table td {
-  padding: var(--trad-space-md) var(--trad-space-lg);
-  border-bottom: 1px solid var(--trad-border);
-  text-align: left;
-  vertical-align: middle;
+  font-family: inherit;
   font-size: 0.875rem;
+  color: var(--trad-text);
 }
 
-.trad-table thead th {
+.trad-table thead {
   background-color: var(--trad-surface-head);
-  font-weight: 600;
+}
+
+/* Sortable header cell — the native button inside carries the styling. */
+.trad-th {
+  padding: 0;
+  border-bottom: 1px solid var(--trad-border);
   white-space: nowrap;
   position: sticky;
   top: 0;
+  background-color: var(--trad-surface-head);
 }
 
-.trad-table tbody tr {
-  background-color: var(--trad-surface);
+.trad-th--num .trad-sort {
+  justify-content: flex-start;
 }
 
-.trad-table tbody tr:hover {
+/* Clean sort header button (reset native button styling). */
+.trad-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0;
+  border: none;
+  background: transparent;
+  padding: var(--trad-space-md) var(--trad-space-lg);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--trad-text-muted);
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Dotted underline signals the header has an explanatory tooltip. */
+.trad-sort--tip .trad-sort__label {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--trad-text-muted);
+  text-underline-offset: 3px;
+}
+
+.trad-sort__ind {
+  color: var(--trad-text-muted);
+  font-size: 0.8em;
+  line-height: 1;
+}
+
+.trad-sort:hover {
+  background-color: var(--trad-surface-alt);
+}
+
+.trad-td {
+  padding: var(--trad-space-md) var(--trad-space-lg);
+  border-bottom: 1px solid var(--trad-border);
+  color: var(--trad-text);
+}
+
+.trad-td--num {
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.trad-table tbody tr:last-child .trad-td {
+  border-bottom: none;
+}
+
+.trad-table tbody tr:hover .trad-td {
   background-color: rgba(var(--now-color--primary-1, 0, 128, 163), var(--now-opacity--least, 0.08));
 }
 
@@ -237,35 +317,43 @@
   color: var(--trad-badge-res-fg);
 }
 
-/* Pagination */
-.trad-pagination {
+/* Boxed, centered pager. */
+.trad-pager {
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--trad-space-md);
+  gap: 0.4rem;
   padding: var(--trad-space-md) var(--trad-space-lg);
-  border-top: 1px solid var(--trad-border);
+}
+
+.trad-pg-btn {
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 var(--trad-space-sm);
+  margin: 0;
+  border: 1px solid var(--trad-border);
+  border-radius: 4px;
   background-color: var(--trad-surface);
+  color: var(--trad-text);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
 }
 
-.trad-pagination__size {
-  display: flex;
-  align-items: center;
-  min-width: 7rem;
+.trad-pg-btn:hover:not(:disabled) {
+  background-color: var(--trad-surface-alt);
 }
 
-.trad-pagination__info {
-  flex: 1 1 auto;
-  text-align: center;
+.trad-pg-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.trad-pager__status {
+  padding: 0 var(--trad-space-md);
   color: var(--trad-text-muted);
   font-size: 0.8125rem;
-}
-
-.trad-pagination__controls {
-  display: flex;
-  align-items: center;
-  gap: var(--trad-space-sm);
 }
 
 /* Loading / empty / error states */
@@ -292,12 +380,5 @@
   }
   .trad-filterbar__actions {
     width: 100%;
-  }
-  .trad-pagination {
-    justify-content: center;
-  }
-  .trad-pagination__info {
-    order: -1;
-    flex: 1 1 100%;
   }
 }

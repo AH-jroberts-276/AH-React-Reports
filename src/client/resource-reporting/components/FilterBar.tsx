@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
     TypeaheadMulti,
     TypeaheadMultiSelectedItem,
@@ -6,7 +6,7 @@ import {
 import { DateTime } from '@servicenow/react-components/DateTime';
 import { Select } from '@servicenow/react-components/Select';
 import { Button } from '@servicenow/react-components/Button';
-import { searchUsers, searchGroups, ReportParams } from '../services/api';
+import { searchGroups, searchGroupMembers, ReportParams } from '../services/api';
 
 interface Props {
     loading: boolean;
@@ -31,6 +31,7 @@ interface AsyncPickerProps {
     selectedItems: TypeaheadMultiSelectedItem[];
     onSelectedItemsSet: (items: TypeaheadMultiSelectedItem[]) => void;
     search: (term: string) => Promise<{ sysId: string; name: string }[]>;
+    disabled?: boolean;
 }
 
 // A managed/async TypeaheadMulti backed by a Table API search function. The
@@ -45,6 +46,7 @@ function AsyncTypeaheadMulti({
     selectedItems,
     onSelectedItemsSet,
     search,
+    disabled,
 }: AsyncPickerProps) {
     const [items, setItems] = useState<TypeaheadMultiSelectedItem[]>([]);
     const [value, setValue] = useState('');
@@ -82,6 +84,7 @@ function AsyncTypeaheadMulti({
             search="managed"
             optional
             disableAutoClose
+            disabled={disabled}
             items={items}
             selectedItems={selectedItems}
             value={value}
@@ -111,6 +114,9 @@ export function FilterBar({ loading, onGenerate }: Props) {
     const [endDate, setEndDate] = useState('');
     const [granularity, setGranularity] = useState<'weekly' | 'monthly'>('weekly');
 
+    const groupSysIds = useMemo(() => selectedGroups.map(g => String(g.id)), [selectedGroups]);
+    const hasGroup = selectedGroups.length > 0;
+
     const handleGenerate = useCallback(() => {
         onGenerate({
             userSysIds: selectedUsers.map(u => String(u.id)),
@@ -120,6 +126,9 @@ export function FilterBar({ loading, onGenerate }: Props) {
             granularity,
         });
     }, [selectedUsers, selectedGroups, startDate, endDate, granularity, onGenerate]);
+
+    // Require at least one Assignment group or User before the report can run.
+    const hasSubject = selectedGroups.length > 0 || selectedUsers.length > 0;
 
     return (
         <div className="rr-filter-card">
@@ -131,18 +140,26 @@ export function FilterBar({ loading, onGenerate }: Props) {
                             placeholder="Search and select one or more groups…"
                             helperContent="Type at least 2 characters to search active groups."
                             selectedItems={selectedGroups}
-                            onSelectedItemsSet={setSelectedGroups}
+                            onSelectedItemsSet={items => {
+                                setSelectedGroups(items);
+                                setSelectedUsers([]);
+                            }}
                             search={searchGroups}
                         />
                     </div>
                     <div className="rr-filterbar__field">
                         <AsyncTypeaheadMulti
                             label="Users"
-                            placeholder="Search and select one or more users…"
-                            helperContent="Type at least 2 characters to search active users."
+                            placeholder={
+                                hasGroup
+                                    ? 'Search and select one or more users…'
+                                    : 'Select an assignment group first'
+                            }
+                            helperContent="Only active members of the selected assignment group(s) are shown. Type at least 2 characters to search."
+                            disabled={!hasGroup}
                             selectedItems={selectedUsers}
                             onSelectedItemsSet={setSelectedUsers}
-                            search={searchUsers}
+                            search={term => searchGroupMembers(term, groupSysIds)}
                         />
                     </div>
                 </div>
@@ -174,11 +191,12 @@ export function FilterBar({ loading, onGenerate }: Props) {
                 </div>
 
                 <div className="rr-filterbar__row">
-                    <div className="rr-filterbar__field rr-filterbar__field--date">
+                    <div className="rr-filterbar__field rr-filterbar__field--granularity">
                         <Select
                             label="Granularity"
                             items={GRANULARITY_ITEMS}
                             selectedItem={granularity}
+                            itemsListConstrain={{ minWidth: 220 }}
                             onSelectedItemSet={e =>
                                 setGranularity(e.detail.payload.value === 'monthly' ? 'monthly' : 'weekly')
                             }
@@ -186,9 +204,9 @@ export function FilterBar({ loading, onGenerate }: Props) {
                     </div>
                     <div className="rr-filterbar__actions">
                         <Button
-                            label="Generate Report"
+                            label="Apply"
                             variant="primary"
-                            disabled={loading}
+                            disabled={loading || !hasSubject}
                             onClicked={handleGenerate}
                         />
                     </div>
