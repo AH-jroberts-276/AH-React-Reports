@@ -56,9 +56,9 @@
 
     function hasAccess() {
         return (
+            gs.hasRole('resource_manager') ||
             gs.hasRole('resource_user') ||
             gs.hasRole('sn_ppm_read') ||
-            gs.hasRole('timecard_user') ||
             gs.hasRole('admin')
         )
     }
@@ -121,7 +121,7 @@
     if (!hasAccess()) {
         response.setStatus(403)
         response.setBody({
-            error: 'Access denied. Required role: resource_user, sn_ppm_read, or timecard_user.',
+            error: 'Access denied. Required role: resource_manager, resource_user, or sn_ppm_read.',
         })
         return
     }

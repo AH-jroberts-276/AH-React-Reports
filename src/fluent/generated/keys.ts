@@ -37,6 +37,18 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: '9fb05623872f8f901e7cebdd3fbb35cb'
                     }
+                    'acl-ui-resource-reporting': {
+                        table: 'sys_security_acl'
+                        id: '79c5ca0a8687438088a699514a94fa29'
+                    }
+                    'acl-ui-sla-breach-dashboard': {
+                        table: 'sys_security_acl'
+                        id: 'c41e89d0bbef44ba8bf6a1a1049d9a07'
+                    }
+                    'acl-ui-task-resource-dashboard': {
+                        table: 'sys_security_acl'
+                        id: '1277e0dc4e524b6a86544259ff6ba934'
+                    }
                     bom_json: {
                         table: 'sys_module'
                         id: '248772bdf7ae45b684bf70d1eed1126b'
@@ -84,6 +96,7 @@ declare global {
                     'react-reports-menu': {
                         table: 'sys_app_application'
                         id: '3330affa77724bc5a869d82a724299e9'
+                        deleted: true
                     }
                     'resource-reporting-api': {
                         table: 'sys_ws_definition'
@@ -92,6 +105,7 @@ declare global {
                     'resource-reporting-module': {
                         table: 'sys_app_module'
                         id: '784920e4f0294225bd7a7a1cdeadcf28'
+                        deleted: true
                     }
                     'resource-reporting-report-data': {
                         table: 'sys_ws_operation'
@@ -183,10 +197,12 @@ declare global {
                     'sla-breach-dashboard-module': {
                         table: 'sys_app_module'
                         id: '17b8ebd665364a6abecd676c94ae68f3'
+                        deleted: true
                     }
                     'task-resource-dashboard-module': {
                         table: 'sys_app_module'
                         id: '7c9a181db18e4071b4f1280b195d3ff6'
+                        deleted: true
                     }
                 }
                 composite: [
@@ -195,6 +211,19 @@ declare global {
                         id: '10a87eedcc9f4da2a986b937c89a3cec'
                         key: {
                             endpoint: 'x_cahcs_react_rpt_sla_breach_dashboard.do'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: '10e83f7064864712895d3220f928c540'
+                        key: {
+                            sys_security_acl: '79c5ca0a8687438088a699514a94fa29'
+                            sys_user_role: {
+                                id: 'd6a137c7f67540f69f2827dea914a8e2'
+                                key: {
+                                    name: 'resource_user'
+                                }
+                            }
                         }
                     },
                     {
@@ -269,6 +298,32 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_security_acl_role'
+                        id: '69a643bddfe1425ea00a991ffc4537bf'
+                        key: {
+                            sys_security_acl: '1277e0dc4e524b6a86544259ff6ba934'
+                            sys_user_role: {
+                                id: '4557bdcb334a4c4c84478e102f93bf69'
+                                key: {
+                                    name: 'itil'
+                                }
+                            }
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: '6e39547fe7594d8ea6dc55a66542a5eb'
+                        key: {
+                            sys_security_acl: 'c41e89d0bbef44ba8bf6a1a1049d9a07'
+                            sys_user_role: {
+                                id: '4557bdcb334a4c4c84478e102f93bf69'
+                                key: {
+                                    name: 'itil'
+                                }
+                            }
+                        }
+                    },
+                    {
                         table: 'sys_ws_query_parameter_map'
                         id: '6f2a1afd12e64a1e874ecb43747c3f71'
                         key: {
@@ -334,6 +389,20 @@ declare global {
                         key: {
                             application_file: '81afa6e41e2f445e8ed38d83c3a2974f'
                             source_artifact: 'ecabea1e10df410e8479e8cbd110b423'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: 'b52001fc1cee4b4f92ab8dfd6ebbedbe'
+                        deleted: true
+                        key: {
+                            sys_security_acl: '79c5ca0a8687438088a699514a94fa29'
+                            sys_user_role: {
+                                id: '4557bdcb334a4c4c84478e102f93bf69'
+                                key: {
+                                    name: 'itil'
+                                }
+                            }
                         }
                     },
                     {
@@ -429,6 +498,32 @@ declare global {
                         key: {
                             web_service_operation: 'a9252dd3638e411da813890c265d9482'
                             web_service_query_parameter: '288dcc0fe2064f81b82fa33224187e13'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: 'e491a0214b304a1eb9965b080019b91a'
+                        key: {
+                            sys_security_acl: '79c5ca0a8687438088a699514a94fa29'
+                            sys_user_role: {
+                                id: 'f20963ac8bbe4cf18a7c870238eeac02'
+                                key: {
+                                    name: 'resource_manager'
+                                }
+                            }
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: 'e5376dbfcb364780a42995e0938faccf'
+                        key: {
+                            sys_security_acl: '79c5ca0a8687438088a699514a94fa29'
+                            sys_user_role: {
+                                id: '861f71c4865f44a9920f265225e53c13'
+                                key: {
+                                    name: 'sn_ppm_read'
+                                }
+                            }
                         }
                     },
                     {

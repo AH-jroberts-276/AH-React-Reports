@@ -60,14 +60,30 @@ Query parameters (`sys_ws_query_parameter`) are child records of each operation
 
 ## Navigation
 
-| Component | Table | sys_id | Link |
-|---|---|---|---|
-| React Reports (application menu) | `sys_app_application` | `3330affa77724bc5a869d82a724299e9` | [open](https://advocatedev.service-now.com/sys_app_application.do?sys_id=3330affa77724bc5a869d82a724299e9) |
-| Resource Reporting (module) | `sys_app_module` | `784920e4f0294225bd7a7a1cdeadcf28` | [open](https://advocatedev.service-now.com/sys_app_module.do?sys_id=784920e4f0294225bd7a7a1cdeadcf28) |
-| Task & Resource Assignment Dashboard (module) | `sys_app_module` | `7c9a181db18e4071b4f1280b195d3ff6` | [open](https://advocatedev.service-now.com/sys_app_module.do?sys_id=7c9a181db18e4071b4f1280b195d3ff6) |
-| SLA Breach by Team (module) | `sys_app_module` | `17b8ebd665364a6abecd676c94ae68f3` | [open](https://advocatedev.service-now.com/sys_app_module.do?sys_id=17b8ebd665364a6abecd676c94ae68f3) |
+This application does **not** define an application-navigator menu or modules.
+Each report is reached directly by its page URL (see **UI Pages** above).
 
-Source: `src/fluent/navigation/react-reports-nav.now.ts`
+---
+
+## Access Control — Page ACLs (`sys_security_acl`)
+
+Each report's rendered UI page is gated by a `ui_page` **read** ACL
+(`decision_type = allow`, `admin_overrides = true`, so admins always retain
+access). For a scoped UI page the ACL `name` is the page's endpoint **without**
+the trailing `.do`. Allowed roles are stored as child `sys_security_acl_role`
+records.
+
+| Page (ACL name) | Allowed roles | sys_id | Link |
+|---|---|---|---|
+| `x_cahcs_react_rpt_resource_reporting` | `resource_manager`, `resource_user`, `sn_ppm_read` | `79c5ca0a8687438088a699514a94fa29` | [open](https://advocatedev.service-now.com/sys_security_acl.do?sys_id=79c5ca0a8687438088a699514a94fa29) |
+| `x_cahcs_react_rpt_task_resource_dashboard` | `itil` | `1277e0dc4e524b6a86544259ff6ba934` | [open](https://advocatedev.service-now.com/sys_security_acl.do?sys_id=1277e0dc4e524b6a86544259ff6ba934) |
+| `x_cahcs_react_rpt_sla_breach_dashboard` | `itil` | `c41e89d0bbef44ba8bf6a1a1049d9a07` | [open](https://advocatedev.service-now.com/sys_security_acl.do?sys_id=c41e89d0bbef44ba8bf6a1a1049d9a07) |
+
+Source: `src/fluent/security/ui-page-acls.now.ts`
+
+> The Resource Time Report's Scripted REST data API (`getReportData`) enforces a
+> matching server-side role gate (`resource_manager`, `resource_user`,
+> `sn_ppm_read`, `admin`), so page access and data access stay consistent.
 
 ---
 
@@ -117,6 +133,6 @@ These are build artifacts (not hand-edited); the source of truth is the
 | `src/fluent/ui-pages/*.now.ts` | `sys_ui_page` |
 | `src/fluent/scripted-rest/*-api.now.ts` | `sys_ws_definition`, `sys_ws_operation`, `sys_ws_query_parameter` |
 | `src/fluent/scripted-rest/*-api.server.js` | handler script on the operation |
-| `src/fluent/navigation/react-reports-nav.now.ts` | `sys_app_application`, `sys_app_module` |
+| `src/fluent/security/ui-page-acls.now.ts` | `sys_security_acl` (+ `sys_security_acl_role`) |
 | `src/fluent/security/cross-scope-privileges.now.ts` | `sys_scope_privilege` |
 | `src/client/<report>/**` | `sys_ux_lib_asset` (compiled bundle) |
