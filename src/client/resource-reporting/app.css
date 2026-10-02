@@ -12,12 +12,12 @@
 .rr-app {
     margin: 0 auto;
     max-width: 1200px;
-    padding: 1.5rem;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
     color: rgb(var(--rr-text));
-    font-family: inherit;
+    font-family: var(--now-font-family, "Source Sans Pro", Arial, sans-serif);
     background-color: rgb(var(--rr-surface));
     min-height: 100%;
     box-sizing: border-box;
@@ -30,10 +30,17 @@
     gap: 0.25rem;
 }
 
-.rr-subtitle {
+.rr-title {
     margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: rgb(var(--rr-text));
+}
+
+.rr-subtitle {
+    margin: 4px 0 0 0;
     color: rgb(var(--rr-text-secondary));
-    font-size: 13px;
+    font-size: 14px;
 }
 
 /* ---------------------------------------------------------------------------

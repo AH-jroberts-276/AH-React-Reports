@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react';
-import { Heading } from '@servicenow/react-components/Heading';
 import { FilterBar } from './components/FilterBar';
 import { ResultsView } from './components/ResultsView';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -29,7 +28,7 @@ export default function App() {
         <ErrorBoundary>
             <main className="rr-app">
                 <header className="rr-header">
-                    <Heading label="Resource Time Report" level={1} variant="header-primary" />
+                    <h1 className="rr-title">Resource Time Report</h1>
                     <p className="rr-subtitle">
                         Compare planned capacity, availability, and allocation against actual hours logged.
                     </p>
