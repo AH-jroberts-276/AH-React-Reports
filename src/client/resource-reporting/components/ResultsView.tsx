@@ -39,7 +39,7 @@ const COLUMNS: Column[] = [
     { key: 'availability', label: 'Availability (hrs)', numeric: true, tooltip: 'Unallocated availability for the period. Source: Resource Aggregate table (parent_category = availability).' },
     { key: 'allocated', label: 'Allocated (hrs)', numeric: true, tooltip: 'Hours allocated via Resource Plans for the period. Source: Resource Aggregate table (parent_category = allocated).' },
     { key: 'actual', label: 'Actual Hours', numeric: true, tooltip: 'Resource Assignments only. This reflects time logged that is associated with a specific RA. Source: Resource Aggregate table (parent_category = actual).' },
-    { key: 'timeCardHours', label: 'Time Card Hours', numeric: true, tooltip: 'Total hours from all time cards submitted by this user in the period, including entries with no associated Resource Assignment. Source: time_card table.' },
+    { key: 'timeCardHours', label: 'Time Card Hours', numeric: true, tooltip: 'Total hours from all time cards submitted by this user in the period, including entries with no associated Resource Assignment. For monthly granularity, each weekly time card is allocated to the calendar month of the day worked, so a week spanning two months is split between them. Source: time_card table.' },
     { key: 'utilization', label: 'Utilization %', numeric: true, tooltip: 'Percentage of capacity actually used. Calculated as: (Time Card Hours ÷ Capacity) × 100. A value above 100% means the user logged more hours than their scheduled capacity.' },
 ];
 
@@ -153,16 +153,6 @@ export function ResultsView({ loading, error, data, granularity }: Props) {
                     onClicked={exportCsv}
                 />
             </div>
-            <Pagination
-                page={currentPage}
-                pageSize={pageSize}
-                total={sorted.length}
-                onPageChange={setPage}
-                onPageSizeChange={size => {
-                    setPageSize(size);
-                    setPage(1);
-                }}
-            />
             <div className="rr-table-wrap">
                 <table className="rr-table">
                     <thead>
@@ -224,6 +214,16 @@ export function ResultsView({ loading, error, data, granularity }: Props) {
                     </tbody>
                 </table>
             </div>
+            <Pagination
+                page={currentPage}
+                pageSize={pageSize}
+                total={sorted.length}
+                onPageChange={setPage}
+                onPageSizeChange={size => {
+                    setPageSize(size);
+                    setPage(1);
+                }}
+            />
         </div>
     );
 }

@@ -9,15 +9,9 @@
 // All requests are authenticated with the current session token via the
 // `X-UserToken` header (window.g_ck) and ask for JSON responses.
 
-export interface UserOption {
-    sysId: string;
-    name: string;
-    email?: string;
-}
-
-export interface GroupOption {
-    sysId: string;
-    name: string;
+export interface Option {
+    value: string;
+    label: string;
 }
 
 export interface ReportRow {
@@ -68,56 +62,49 @@ async function fetchJson<T>(url: string): Promise<T> {
     return (await response.json()) as T;
 }
 
-export async function searchUsers(term: string): Promise<UserOption[]> {
-    if (term.length < 2) {
-        return [];
-    }
-    const query = `active=true^nameLIKE${term}^ORDERBYname`;
+// Active assignment groups that carry an ITIL or PPS-resource role — the same
+// role-scoped list the Task & Resource Dashboard uses. Loaded once up front and
+// filtered client-side by the MultiSelect. De-duplicated, name-sorted.
+export async function fetchGroups(): Promise<Option[]> {
+    const query = 'role.nameINitil,pps_resource^group.active=true^ORDERBYgroup.name';
     const url =
-        `/api/now/table/sys_user?sysparm_query=${encodeURIComponent(query)}` +
-        `&sysparm_fields=${encodeURIComponent('sys_id,name,email')}` +
-        `&sysparm_limit=20`;
-    const data = await fetchJson<TableResponse<{ sys_id: string; name: string; email?: string }>>(url);
-    return (data.result ?? []).map(r => ({ sysId: r.sys_id, name: r.name, email: r.email }));
-}
-
-export async function searchGroupMembers(term: string, groupSysIds: string[]): Promise<UserOption[]> {
-    if (!groupSysIds.length || term.length < 2) {
-        return [];
-    }
-    const query =
-        `group.active=true^groupIN${groupSysIds.join(',')}` +
-        `^user.active=true^user.nameLIKE${term}^ORDERBYuser.name`;
-    const url =
-        `/api/now/table/sys_user_grmember?sysparm_query=${encodeURIComponent(query)}` +
-        `&sysparm_fields=${encodeURIComponent('user.sys_id,user.name,user.email')}` +
-        `&sysparm_limit=20`;
-    const data = await fetchJson<
-        TableResponse<{ 'user.sys_id': string; 'user.name': string; 'user.email'?: string }>
-    >(url);
-    // A user can belong to multiple selected groups; de-duplicate by sys_id.
+        `/api/now/table/sys_group_has_role?sysparm_query=${encodeURIComponent(query)}` +
+        `&sysparm_fields=group&sysparm_display_value=all` +
+        `&sysparm_exclude_reference_link=true&sysparm_limit=5000`;
+    const data = await fetchJson<TableResponse<{ group: { value: string; display_value: string } }>>(url);
     const seen = new Set<string>();
-    const out: UserOption[] = [];
+    const out: Option[] = [];
     for (const r of data.result ?? []) {
-        const sysId = r['user.sys_id'];
-        if (!sysId || seen.has(sysId)) continue;
-        seen.add(sysId);
-        out.push({ sysId, name: r['user.name'], email: r['user.email'] });
+        const g = r.group;
+        if (!g || !g.value || seen.has(g.value)) continue;
+        seen.add(g.value);
+        out.push({ value: g.value, label: g.display_value || g.value });
     }
     return out;
 }
 
-export async function searchGroups(term: string): Promise<GroupOption[]> {
-    if (term.length < 2) {
+// Active members of the selected group(s). Preloaded when the group selection
+// changes so the Users field shows the full list on open (mirrors the TRD).
+// A user can belong to multiple selected groups; de-duplicate by sys_id.
+export async function fetchGroupMembers(groupSysIds: string[]): Promise<Option[]> {
+    if (!groupSysIds.length) {
         return [];
     }
-    const query = `active=true^nameLIKE${term}^ORDERBYname`;
+    const query = `groupIN${groupSysIds.join(',')}^user.active=true^ORDERBYuser.name`;
     const url =
-        `/api/now/table/sys_user_group?sysparm_query=${encodeURIComponent(query)}` +
-        `&sysparm_fields=${encodeURIComponent('sys_id,name')}` +
-        `&sysparm_limit=20`;
-    const data = await fetchJson<TableResponse<{ sys_id: string; name: string }>>(url);
-    return (data.result ?? []).map(r => ({ sysId: r.sys_id, name: r.name }));
+        `/api/now/table/sys_user_grmember?sysparm_query=${encodeURIComponent(query)}` +
+        `&sysparm_fields=user&sysparm_display_value=all` +
+        `&sysparm_exclude_reference_link=true&sysparm_limit=5000`;
+    const data = await fetchJson<TableResponse<{ user: { value: string; display_value: string } }>>(url);
+    const seen = new Set<string>();
+    const out: Option[] = [];
+    for (const r of data.result ?? []) {
+        const u = r.user;
+        if (!u || !u.value || seen.has(u.value)) continue;
+        seen.add(u.value);
+        out.push({ value: u.value, label: u.display_value || u.value });
+    }
+    return out;
 }
 
 export async function fetchReport(params: ReportParams): Promise<ReportResult> {

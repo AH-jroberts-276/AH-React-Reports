@@ -1,12 +1,9 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import {
-    TypeaheadMulti,
-    TypeaheadMultiSelectedItem,
-} from '@servicenow/react-components/TypeaheadMulti';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DateTime } from '@servicenow/react-components/DateTime';
 import { Select } from '@servicenow/react-components/Select';
 import { Button } from '@servicenow/react-components/Button';
-import { searchGroups, searchGroupMembers, ReportParams } from '../services/api';
+import { MultiSelect } from './MultiSelect';
+import { fetchGroups, fetchGroupMembers, Option, ReportParams } from '../services/api';
 
 interface Props {
     loading: boolean;
@@ -24,142 +21,87 @@ function displayToIso(display: string): string {
     return m ? `${m[3]}-${m[1]}-${m[2]}` : '';
 }
 
-interface AsyncPickerProps {
-    label: string;
-    placeholder: string;
-    helperContent: string;
-    selectedItems: TypeaheadMultiSelectedItem[];
-    onSelectedItemsSet: (items: TypeaheadMultiSelectedItem[]) => void;
-    search: (term: string) => Promise<{ sysId: string; name: string }[]>;
-    disabled?: boolean;
-}
-
-// A managed/async TypeaheadMulti backed by a Table API search function. The
-// users and groups tables are large, so nothing is preloaded: as the user
-// types we debounce (300ms), require >= 2 chars, then feed matches into
-// `items`. `search="managed"` disables the component's own filtering so our
-// fetched list is shown verbatim. Selections flow up as {id,label} chips.
-function AsyncTypeaheadMulti({
-    label,
-    placeholder,
-    helperContent,
-    selectedItems,
-    onSelectedItemsSet,
-    search,
-    disabled,
-}: AsyncPickerProps) {
-    const [items, setItems] = useState<TypeaheadMultiSelectedItem[]>([]);
-    const [value, setValue] = useState('');
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const runSearch = useCallback(
-        (term: string) => {
-            if (term.trim().length < 2) {
-                setItems([]);
-                return;
-            }
-            search(term.trim())
-                .then(results => setItems(results.map(r => ({ id: r.sysId, label: r.name }))))
-                .catch(() => setItems([]));
-        },
-        [search]
-    );
-
-    const handleValueSet = useCallback(
-        (term: string) => {
-            setValue(term);
-            if (debounceRef.current) {
-                clearTimeout(debounceRef.current);
-            }
-            debounceRef.current = setTimeout(() => runSearch(term), 300);
-        },
-        [runSearch]
-    );
-
-    return (
-        <TypeaheadMulti
-            label={label}
-            placeholder={placeholder}
-            helperContent={helperContent}
-            search="managed"
-            optional
-            disableAutoClose
-            disabled={disabled}
-            items={items}
-            selectedItems={selectedItems}
-            value={value}
-            manageValue
-            onValueSet={e => handleValueSet(e.detail.payload.value || '')}
-            onSelectedItemsSet={e => {
-                onSelectedItemsSet(e.detail.payload.value);
-                setValue('');
-                setItems([]);
-            }}
-        />
-    );
-}
-
 const GRANULARITY_ITEMS = [
     { id: 'weekly', label: 'Weekly' },
     { id: 'monthly', label: 'Monthly' },
 ];
 
-// TRD-style grouped filter card. Assignment groups and Users are shown
-// SIMULTANEOUSLY (no toggle); fetchReport unions explicit users with the
-// selected groups' active members server-side, so both can be supplied at once.
+// TRD-style grouped filter card. Assignment groups are preloaded from the
+// role-scoped (ITIL / PPS-resource) list; selecting one or more groups preloads
+// their active members into the Users field (so the full list shows on open).
+// The Users field is disabled until a group is chosen, and stale user
+// selections are pruned (still-valid ones kept) when the group changes — the
+// same cascade as the Task & Resource Assignment Dashboard.
 export function FilterBar({ loading, onGenerate }: Props) {
-    const [selectedGroups, setSelectedGroups] = useState<TypeaheadMultiSelectedItem[]>([]);
-    const [selectedUsers, setSelectedUsers] = useState<TypeaheadMultiSelectedItem[]>([]);
+    const [groups, setGroups] = useState<Option[]>([]);
+    const [users, setUsers] = useState<Option[]>([]);
+    const [groupsLoading, setGroupsLoading] = useState(true);
+    const [usersLoading, setUsersLoading] = useState(false);
+    const [groupIds, setGroupIds] = useState<string[]>([]);
+    const [userIds, setUserIds] = useState<string[]>([]);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [granularity, setGranularity] = useState<'weekly' | 'monthly'>('weekly');
 
-    const groupSysIds = useMemo(() => selectedGroups.map(g => String(g.id)), [selectedGroups]);
-    const hasGroup = selectedGroups.length > 0;
+    // Load the role-scoped assignment-group list once on mount.
+    useEffect(() => {
+        fetchGroups()
+            .then(setGroups)
+            .catch(() => setGroups([]))
+            .finally(() => setGroupsLoading(false));
+    }, []);
+
+    // When the group selection changes, reload members and drop stale users.
+    useEffect(() => {
+        if (!groupIds.length) {
+            setUsers([]);
+            setUserIds(ids => (ids.length ? [] : ids));
+            return;
+        }
+        setUsersLoading(true);
+        fetchGroupMembers(groupIds)
+            .then(members => {
+                setUsers(members);
+                const valid = new Set(members.map(m => m.value));
+                setUserIds(ids => ids.filter(id => valid.has(id)));
+            })
+            .catch(() => setUsers([]))
+            .finally(() => setUsersLoading(false));
+    }, [groupIds]);
 
     const handleGenerate = useCallback(() => {
         onGenerate({
-            userSysIds: selectedUsers.map(u => String(u.id)),
-            groupSysIds: selectedGroups.map(g => String(g.id)),
+            userSysIds: userIds,
+            groupSysIds: groupIds,
             startDate,
             endDate,
             granularity,
         });
-    }, [selectedUsers, selectedGroups, startDate, endDate, granularity, onGenerate]);
+    }, [userIds, groupIds, startDate, endDate, granularity, onGenerate]);
 
     // Require at least one Assignment group or User before the report can run.
-    const hasSubject = selectedGroups.length > 0 || selectedUsers.length > 0;
+    const hasSubject = groupIds.length > 0 || userIds.length > 0;
 
     return (
         <div className="rr-filter-card">
             <div className="rr-filterbar">
                 <div className="rr-filterbar__grid">
                     <div className="rr-filterbar__field">
-                        <AsyncTypeaheadMulti
+                        <MultiSelect
                             label="Assignment groups"
-                            placeholder="Search and select one or more groups…"
-                            helperContent="Type at least 2 characters to search active groups."
-                            selectedItems={selectedGroups}
-                            onSelectedItemsSet={items => {
-                                setSelectedGroups(items);
-                                setSelectedUsers([]);
-                            }}
-                            search={searchGroups}
+                            options={groups}
+                            selected={groupIds}
+                            disabled={groupsLoading}
+                            onChange={setGroupIds}
                         />
                     </div>
                     <div className="rr-filterbar__field">
-                        <AsyncTypeaheadMulti
+                        <MultiSelect
                             label="Users"
-                            placeholder={
-                                hasGroup
-                                    ? 'Search and select one or more users…'
-                                    : 'Select an assignment group first'
-                            }
-                            helperContent="Only active members of the selected assignment group(s) are shown. Type at least 2 characters to search."
-                            disabled={!hasGroup}
-                            selectedItems={selectedUsers}
-                            onSelectedItemsSet={setSelectedUsers}
-                            search={term => searchGroupMembers(term, groupSysIds)}
+                            options={users}
+                            selected={userIds}
+                            disabled={usersLoading || groupIds.length === 0}
+                            onChange={setUserIds}
                         />
                     </div>
                 </div>

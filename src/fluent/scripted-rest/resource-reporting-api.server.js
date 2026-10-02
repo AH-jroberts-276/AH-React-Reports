@@ -4,13 +4,19 @@
 //
 // Reads query params (user_sys_ids, group_sys_ids, start_date, end_date,
 // granularity). user_sys_ids and group_sys_ids are comma-separated lists;
-// either or both may be omitted. Starting from the explicit user list, any
-// active members of the supplied groups are UNIONed in; if the combined set is
-// non-empty the aggregate/time_card queries are constrained to it. When BOTH
-// params are empty, no user constraint is applied (all users). Pivots the
-// resource aggregate (weekly/monthly) and time card tables into one row per
-// (period, user). Returns { rows, total, truncated? }. Enforces a role gate and
-// responds with HTTP 403 + { error } JSON when the caller lacks access.
+// either or both may be omitted. Explicit users take precedence: when
+// user_sys_ids is non-empty the aggregate/time_card queries are constrained to
+// exactly those users (the group selection only serves to populate the Users
+// picker). When no users are supplied but group_sys_ids is, the active members
+// of those groups are used instead. When BOTH params are empty, no user
+// constraint is applied (all users). Pivots the resource aggregate
+// (weekly/monthly) and time card tables into one row per (period, user). For
+// monthly granularity each weekly time card's hours are allocated to the
+// calendar month of the day worked (using the per-day columns), so a week that
+// spans two months is split across them rather than counted whole in the month
+// its week_starts_on falls in. Returns { rows, total, truncated? }. Enforces a
+// role gate and responds with HTTP 403 + { error } JSON when the caller lacks
+// access.
 ;(function process(/* RESTAPIRequest */ request, /* RESTAPIResponse */ response) {
     var ROW_CAP = 10000
     var QUERY_LIMIT = 60000
@@ -127,7 +133,11 @@
     var granularity = getParam('granularity') || 'weekly'
     var weekly = granularity !== 'monthly'
 
-    // Build the combined user set: explicit users UNION active group members.
+    // Determine the user set to constrain by. Explicit users take PRECEDENCE:
+    // the group selection only populates the Users picker, so when specific
+    // users are chosen the report is limited strictly to them. When no users
+    // are supplied but one or more groups are, fall back to the groups' active
+    // members.
     var idSet = {}
     var combined = []
     function addId(id) {
@@ -136,10 +146,11 @@
             combined.push(id)
         }
     }
-    for (var i = 0; i < userList.length; i++) {
-        addId(userList[i])
-    }
-    if (groupList.length) {
+    if (userList.length) {
+        for (var i = 0; i < userList.length; i++) {
+            addId(userList[i])
+        }
+    } else if (groupList.length) {
         var members = resolveGroupMembers(groupList)
         for (var j = 0; j < members.length; j++) {
             addId(members[j])
@@ -218,12 +229,26 @@
         }
     }
 
+    // Per-day hours columns on time_card, keyed by GlideDateTime.getDayOfWeek-
+    // LocalTime() (1 = Monday ... 7 = Sunday). Used for the monthly split below.
+    var DOW_FIELD = { 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday', 7: 'sunday' }
+
+    function minusDays(ymd, n) {
+        var g = new GlideDateTime(ymd + ' 00:00:00')
+        g.addDaysLocalTime(-n)
+        return g.getLocalDate().toString()
+    }
+
     var tc = new GlideRecord('time_card')
     if (constrain) {
         tc.addQuery('user', 'IN', userSysIds)
     }
+    // Weekly rows ARE weeks, so the whole week total belongs to its week. For
+    // monthly we split each weekly card across calendar months by day, so a
+    // week that starts in the prior month can still contribute days to this one
+    // — widen the lower bound by 6 days and then filter precisely per day.
     if (startDate) {
-        tc.addQuery('week_starts_on', '>=', startDate)
+        tc.addQuery('week_starts_on', '>=', weekly ? startDate : minusDays(startDate, 6))
     }
     if (endDate) {
         tc.addQuery('week_starts_on', '<=', endDate)
@@ -237,12 +262,39 @@
         if (!tUser || !week) {
             continue
         }
-        var period = weekly ? week : firstOfMonth(week)
-        var tRow = getRow(tUser, period)
-        if (!tRow.userName) {
-            tRow.userName = tc.getDisplayValue('user')
+
+        if (weekly) {
+            var wRow = getRow(tUser, week)
+            if (!wRow.userName) {
+                wRow.userName = tc.getDisplayValue('user')
+            }
+            wRow.timeCardHours += parseFloat(tc.getValue('total')) || 0
+            continue
         }
-        tRow.timeCardHours += parseFloat(tc.getValue('total')) || 0
+
+        // Monthly: allocate each day's hours to the calendar month it falls in,
+        // reading the weekday column that matches each date in the week.
+        var base = new GlideDateTime(week + ' 00:00:00')
+        for (var di = 0; di < 7; di++) {
+            var d = new GlideDateTime(base)
+            d.addDaysLocalTime(di)
+            var dayStr = d.getLocalDate().toString()
+            if (startDate && dayStr < startDate) {
+                continue
+            }
+            if (endDate && dayStr > endDate) {
+                continue
+            }
+            var dayHours = parseFloat(tc.getValue(DOW_FIELD[d.getDayOfWeekLocalTime()])) || 0
+            if (!dayHours) {
+                continue
+            }
+            var mRow = getRow(tUser, firstOfMonth(dayStr))
+            if (!mRow.userName) {
+                mRow.userName = tc.getDisplayValue('user')
+            }
+            mRow.timeCardHours += dayHours
+        }
     }
 
     var rows = []
