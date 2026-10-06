@@ -39,3 +39,13 @@ export const sla_breach_dashboard_page_acl = Acl({
     adminOverrides: true,
     description: 'Restrict the SLA Breach by Team UI page to users with the itil role.',
 })
+
+export const kpi_report_page_acl = Acl({
+    $id: Now.ID['acl-ui-kpi-report'],
+    type: 'ui_page',
+    name: 'x_cahcs_react_rpt_kpi_report',
+    operation: 'read',
+    roles: ['itil'],
+    adminOverrides: true,
+    description: 'Restrict the KPI Report UI page to users with the itil role.',
+})

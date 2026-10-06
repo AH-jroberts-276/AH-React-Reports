@@ -92,3 +92,33 @@ CrossScopePrivilege({
     targetScope: 'global',
     targetType: 'sys_db_object',
 })
+
+// The "KPI Report" Scripted REST operation reads these global tables
+// server-side (sc_task catalog tasks, sys_audit field-change history for the
+// assignment/on-hold columns, and sys_journal_field for work notes).
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_sc_task'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'sc_task',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})
+
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_sys_audit'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'sys_audit',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})
+
+CrossScopePrivilege({
+    $id: Now.ID['csp_read_sys_journal'],
+    status: 'allowed',
+    operation: 'read',
+    targetName: 'sys_journal_field',
+    targetScope: 'global',
+    targetType: 'sys_db_object',
+})

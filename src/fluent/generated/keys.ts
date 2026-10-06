@@ -37,6 +37,10 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: '9fb05623872f8f901e7cebdd3fbb35cb'
                     }
+                    'acl-ui-kpi-report': {
+                        table: 'sys_security_acl'
+                        id: '32ba6f1aaf794a1a906a0bf8ee30674e'
+                    }
                     'acl-ui-resource-reporting': {
                         table: 'sys_security_acl'
                         id: '79c5ca0a8687438088a699514a94fa29'
@@ -73,6 +77,18 @@ declare global {
                         table: 'sys_scope_privilege'
                         id: 'c52f64bc122f4077844d9e73a4528d0b'
                     }
+                    csp_read_sc_task: {
+                        table: 'sys_scope_privilege'
+                        id: 'cd00010113fe4328a17b585d7ef31455'
+                    }
+                    csp_read_sys_audit: {
+                        table: 'sys_scope_privilege'
+                        id: '3afe4ab75d1540ee95c90b21440e06a2'
+                    }
+                    csp_read_sys_journal: {
+                        table: 'sys_scope_privilege'
+                        id: 'e1e06c1f0b054abfbe58390ef4a2e73f'
+                    }
                     csp_read_task_sla: {
                         table: 'sys_scope_privilege'
                         id: '3a55f90f12c041d5acebed24c6107075'
@@ -88,6 +104,38 @@ declare global {
                     csp_read_user_group: {
                         table: 'sys_scope_privilege'
                         id: '76e1bb3312d04bd6b8b0aabe8820fd9b'
+                    }
+                    'kpi-param-end-date': {
+                        table: 'sys_ws_query_parameter'
+                        id: '7069667ff9fb4bcb9b16dd24d63820fa'
+                    }
+                    'kpi-param-group-sys-ids': {
+                        table: 'sys_ws_query_parameter'
+                        id: '0087cf8b3a614de8a621ffc63bbdfb31'
+                    }
+                    'kpi-param-limit-worknotes': {
+                        table: 'sys_ws_query_parameter'
+                        id: '8c59663d369249df8cb11c65db1dd3fa'
+                    }
+                    'kpi-param-record-refs': {
+                        table: 'sys_ws_query_parameter'
+                        id: '91fe434b296d44e9ba26368c939a855a'
+                    }
+                    'kpi-param-start-date': {
+                        table: 'sys_ws_query_parameter'
+                        id: '043d37c08bfa4fc494232998713d8886'
+                    }
+                    'kpi-param-user-sys-ids': {
+                        table: 'sys_ws_query_parameter'
+                        id: '6ba0de969e424a5397826da49e8dbd8a'
+                    }
+                    'kpi-report-api': {
+                        table: 'sys_ws_definition'
+                        id: '6212025bfb7f44edb0a2d8f368015638'
+                    }
+                    'kpi-report-report-data': {
+                        table: 'sys_ws_operation'
+                        id: '8d2f8ae4244c4e018ad35bebec9b7775'
                     }
                     package_json: {
                         table: 'sys_module'
@@ -207,6 +255,14 @@ declare global {
                 }
                 composite: [
                     {
+                        table: 'sys_ws_query_parameter_map'
+                        id: '0c910795efe1454cb82df364dbb1c43c'
+                        key: {
+                            web_service_operation: '8d2f8ae4244c4e018ad35bebec9b7775'
+                            web_service_query_parameter: '0087cf8b3a614de8a621ffc63bbdfb31'
+                        }
+                    },
+                    {
                         table: 'sys_ui_page'
                         id: '10a87eedcc9f4da2a986b937c89a3cec'
                         key: {
@@ -224,6 +280,14 @@ declare global {
                                     name: 'resource_user'
                                 }
                             }
+                        }
+                    },
+                    {
+                        table: 'sn_glider_source_artifact_m2m'
+                        id: '11111368ce5b46aeb6742302ad12788c'
+                        key: {
+                            application_file: '38d8827cae124aac8492af3aa9a2f30d'
+                            source_artifact: '34c759954b6c4263b8b7d6576820f3cd'
                         }
                     },
                     {
@@ -267,11 +331,33 @@ declare global {
                         }
                     },
                     {
+                        table: 'sn_glider_source_artifact'
+                        id: '34c759954b6c4263b8b7d6576820f3cd'
+                        key: {
+                            name: 'x_cahcs_react_rpt_kpi_report.do - BYOUI Files'
+                        }
+                    },
+                    {
+                        table: 'sys_ux_lib_asset'
+                        id: '38d8827cae124aac8492af3aa9a2f30d'
+                        key: {
+                            name: 'x_cahcs_react_rpt/kpi-report/main.js.map'
+                        }
+                    },
+                    {
                         table: 'sys_ws_query_parameter_map'
                         id: '3be7028bbfd145cc9936d5c04f5e3b01'
                         key: {
                             web_service_operation: 'a9252dd3638e411da813890c265d9482'
                             web_service_query_parameter: '4b29ca15db4b41b8a579124d3e6a32f3'
+                        }
+                    },
+                    {
+                        table: 'sn_glider_source_artifact_m2m'
+                        id: '4d7995b8059943299db5e4af144ff31e'
+                        key: {
+                            application_file: '65ca19ad23ce47d894d39fb1053cc554'
+                            source_artifact: '34c759954b6c4263b8b7d6576820f3cd'
                         }
                     },
                     {
@@ -291,10 +377,25 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ws_query_parameter_map'
+                        id: '628b167770d84bf1b69fac76b1961974'
+                        key: {
+                            web_service_operation: '8d2f8ae4244c4e018ad35bebec9b7775'
+                            web_service_query_parameter: '91fe434b296d44e9ba26368c939a855a'
+                        }
+                    },
+                    {
                         table: 'sys_ux_lib_asset'
                         id: '63be7aad82ba4df7b1587ecd6132c3aa'
                         key: {
                             name: 'x_cahcs_react_rpt/resource-reporting/main'
+                        }
+                    },
+                    {
+                        table: 'sys_ui_page'
+                        id: '65ca19ad23ce47d894d39fb1053cc554'
+                        key: {
+                            endpoint: 'x_cahcs_react_rpt_kpi_report.do'
                         }
                     },
                     {
@@ -332,10 +433,26 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ws_query_parameter_map'
+                        id: '7a5358f5d3fb418983a206bbdef17dec'
+                        key: {
+                            web_service_operation: '8d2f8ae4244c4e018ad35bebec9b7775'
+                            web_service_query_parameter: '8c59663d369249df8cb11c65db1dd3fa'
+                        }
+                    },
+                    {
                         table: 'sys_ux_lib_asset'
                         id: '7a846135b3c14ec78116a129d417acbd'
                         key: {
                             name: 'x_cahcs_react_rpt/sla-breach/main'
+                        }
+                    },
+                    {
+                        table: 'sn_glider_source_artifact_m2m'
+                        id: '809e0a0dad0b4c679bf584ea63c9a17c'
+                        key: {
+                            application_file: '99ded1fe536b4430a007fba321ee097f'
+                            source_artifact: '34c759954b6c4263b8b7d6576820f3cd'
                         }
                     },
                     {
@@ -350,6 +467,14 @@ declare global {
                         id: '83c8b9abee43470eb18b5257f5b4e042'
                         key: {
                             name: 'x_cahcs_react_rpt/resource-reporting/main.js.map'
+                        }
+                    },
+                    {
+                        table: 'sys_ws_query_parameter_map'
+                        id: '8ad5b0802b124c699db9fcc022bffef6'
+                        key: {
+                            web_service_operation: '8d2f8ae4244c4e018ad35bebec9b7775'
+                            web_service_query_parameter: '043d37c08bfa4fc494232998713d8886'
                         }
                     },
                     {
@@ -369,10 +494,25 @@ declare global {
                         }
                     },
                     {
+                        table: 'sys_ux_lib_asset'
+                        id: '99ded1fe536b4430a007fba321ee097f'
+                        key: {
+                            name: 'x_cahcs_react_rpt/kpi-report/main'
+                        }
+                    },
+                    {
                         table: 'sn_glider_source_artifact'
                         id: 'a104ceafdbb14f8687aac17c3a02bcd6'
                         key: {
                             name: 'x_cahcs_react_rpt_task_resource_dashboard.do - BYOUI Files'
+                        }
+                    },
+                    {
+                        table: 'sys_ws_query_parameter_map'
+                        id: 'aa0891417fe74261945389aa8fd9bc4e'
+                        key: {
+                            web_service_operation: '8d2f8ae4244c4e018ad35bebec9b7775'
+                            web_service_query_parameter: '7069667ff9fb4bcb9b16dd24d63820fa'
                         }
                     },
                     {
@@ -419,6 +559,19 @@ declare global {
                         key: {
                             application_file: 'fa31ab53adf74e42a818b1a8a93090a1'
                             source_artifact: 'a104ceafdbb14f8687aac17c3a02bcd6'
+                        }
+                    },
+                    {
+                        table: 'sys_security_acl_role'
+                        id: 'cbbdfe3b14944f858c08bbefac3d0e41'
+                        key: {
+                            sys_security_acl: '32ba6f1aaf794a1a906a0bf8ee30674e'
+                            sys_user_role: {
+                                id: '4557bdcb334a4c4c84478e102f93bf69'
+                                key: {
+                                    name: 'itil'
+                                }
+                            }
                         }
                     },
                     {
@@ -483,6 +636,14 @@ declare global {
                         id: 'dd9b410d557a40878c7f129fce42da91'
                         key: {
                             name: 'x_cahcs_react_rpt/task-resource-dashboard/main'
+                        }
+                    },
+                    {
+                        table: 'sys_ws_query_parameter_map'
+                        id: 'de2dcaac62374f2aae82ee0344ec7fc1'
+                        key: {
+                            web_service_operation: '8d2f8ae4244c4e018ad35bebec9b7775'
+                            web_service_query_parameter: '6ba0de969e424a5397826da49e8dbd8a'
                         }
                     },
                     {

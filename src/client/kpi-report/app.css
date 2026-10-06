@@ -1,0 +1,397 @@
+:root {
+    --rr-text: var(--now-color--text-primary, 22, 27, 28);
+    --rr-text-secondary: var(--now-color--text-secondary, 70, 79, 83);
+    --rr-text-tertiary: var(--now-color--text-tertiary, 109, 114, 120);
+    --rr-surface: var(--now-color--background-primary, 255, 255, 255);
+    --rr-surface-alt: var(--now-color--background-secondary, 237, 238, 240);
+    --rr-surface-hover: var(--now-color--background-tertiary, 246, 247, 248);
+    --rr-border: var(--now-color--divider-secondary, 214, 217, 220);
+    --rr-link: var(--now-color--interactive-primary, 42, 101, 161);
+}
+
+.rr-app {
+    margin: 0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    color: rgb(var(--rr-text));
+    font-family: var(--now-font-family, "Source Sans Pro", Arial, sans-serif);
+    background-color: rgb(var(--rr-surface-alt));
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.rr-header {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.rr-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: rgb(var(--rr-text));
+}
+
+.rr-subtitle {
+    margin: 4px 0 0 0;
+    color: rgb(var(--rr-text-secondary));
+    font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Filter section — TRD-style grouped card. Re-prefixed verbatim from the Task
+ * Resource Dashboard's trad- filter rules to rr-, using this report's own rr-
+ * design-token variables. Hosts standard @servicenow/react-components
+ * (TypeaheadMulti, DateTime, Select, Button); only the card/grid/section
+ * layout is styled here — the controls theme themselves.
+ * ------------------------------------------------------------------------- */
+.rr-filter-card {
+    background-color: rgb(var(--rr-surface));
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 8px;
+    box-shadow: var(--now-static-drop-shadow--sm, 0 1px 2px rgba(0, 0, 0, 0.08));
+    padding: 1rem;
+}
+
+.rr-filterbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* One logical row of filters in the grouped layout. */
+.rr-filterbar__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+/* Assignment groups / Users: equal 2-col grid, shown simultaneously. */
+.rr-filterbar__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 360px));
+    justify-content: start;
+    row-gap: 1rem;
+    column-gap: 0.75rem;
+}
+
+/* The standard TypeaheadMulti renders at its own intrinsic width; make it fill
+   its grid cell so each field occupies the full (capped) column. */
+.rr-filterbar__field now-typeahead-multi {
+    display: block;
+    width: 100%;
+}
+
+/* A titled filter section (e.g. Dates). */
+.rr-filterbar__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rr-filterbar__section-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(var(--rr-text));
+}
+
+.rr-filterbar__field {
+    flex: 1 1 240px;
+    min-width: 200px;
+}
+
+/* Date / granularity controls have a fixed footprint, so keep them narrow. */
+.rr-filterbar__field--date {
+    flex: 0 1 180px;
+    min-width: 160px;
+}
+
+/* Granularity select: wider than the date fields so option labels (Weekly /
+   Monthly) render on a single line rather than wrapping. */
+.rr-filterbar__field--granularity {
+    flex: 0 1 240px;
+    min-width: 220px;
+}
+
+/* The standard Select renders at its own intrinsic width; make the now-select
+   fill its grid cell so the trigger (and its width:"target" options popover)
+   span the full column. */
+.rr-filterbar__field--granularity now-select {
+    display: block;
+    width: 100%;
+}
+
+.rr-filterbar__actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+}
+
+@media (max-width: 768px) {
+    .rr-filterbar__field,
+    .rr-filterbar__field--date,
+    .rr-filterbar__field--granularity {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .rr-filterbar__grid {
+        grid-template-columns: 1fr;
+    }
+    .rr-filterbar__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* Results card */
+.rr-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1.25rem;
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 8px;
+    background-color: rgb(var(--rr-surface));
+}
+
+.rr-results-toolbar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.rr-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.rr-page-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 13px;
+}
+
+.rr-showing {
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 13px;
+}
+
+.rr-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 6px;
+}
+
+.rr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    font-size: 14px;
+    color: rgb(var(--rr-text));
+}
+
+.rr-table thead {
+    background-color: rgb(var(--rr-surface-alt));
+}
+
+.rr-th {
+    padding: 0;
+    border-bottom: 1px solid rgb(var(--rr-border));
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    background-color: rgb(var(--rr-surface-alt));
+}
+
+/* Clean sort header button (reset native button styling) */
+.rr-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(var(--rr-text-secondary));
+    cursor: pointer;
+    text-align: left;
+}
+
+.rr-th--num .rr-sort {
+    justify-content: flex-start;
+}
+
+/* Dotted underline signals the header has an explanatory tooltip */
+.rr-sort--tip .rr-sort__label {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: rgb(var(--rr-text-tertiary));
+    text-underline-offset: 3px;
+}
+
+.rr-sort__ind {
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 0.8em;
+    line-height: 1;
+}
+
+.rr-sort:hover {
+    background-color: rgb(var(--rr-surface-hover));
+}
+
+.rr-td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgb(var(--rr-border));
+    color: rgb(var(--rr-text));
+}
+
+.rr-td--num {
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+}
+
+.rr-table tbody tr:last-child .rr-td {
+    border-bottom: none;
+}
+
+.rr-table tbody tr:hover .rr-td {
+    background-color: rgb(var(--rr-surface-hover));
+}
+
+/* Drill-down links on the hour cells (open the underlying list in a new tab) */
+.rr-link {
+    color: rgb(var(--rr-link));
+    text-decoration: none;
+}
+
+.rr-link:hover {
+    text-decoration: underline;
+}
+
+/* Boxed, centered pager */
+.rr-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.rr-pg-btn {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    margin: 0;
+    border: 1px solid rgb(var(--rr-border));
+    border-radius: 4px;
+    background-color: rgb(var(--rr-surface));
+    color: rgb(var(--rr-text));
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.rr-pg-btn:hover:not(:disabled) {
+    background-color: rgb(var(--rr-surface-hover));
+}
+
+.rr-pg-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.rr-pager__status {
+    padding: 0 0.75rem;
+    color: rgb(var(--rr-text-tertiary));
+    font-size: 13px;
+}
+
+/* ---------------------------------------------------------------------------
+ * KPI Report specific cells — work notes (expandable) and resolution (long
+ * wrapping text). Reuses the rr- design-token variables above.
+ * ------------------------------------------------------------------------- */
+
+/* Non-sortable header label (Work Notes) keeps the same padding as rr-sort. */
+.rr-th__plain {
+    display: inline-block;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(var(--rr-text-secondary));
+}
+
+/* Resolution: long free text — allow wrapping and cap the column width so a
+   single long note cannot blow out the table. */
+.rr-td--resolution {
+    max-width: 360px;
+}
+
+.rr-resolution {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 7.5em;
+    overflow-y: auto;
+}
+
+/* Work notes: compact, expandable stacked list. */
+.rr-td--notes {
+    max-width: 320px;
+}
+
+.rr-notes__summary {
+    cursor: pointer;
+    color: rgb(var(--rr-link));
+    font-size: 13px;
+    list-style: revert;
+}
+
+.rr-notes__list {
+    margin: 0.5rem 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 14em;
+    overflow-y: auto;
+}
+
+.rr-notes__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgb(var(--rr-border));
+}
+
+.rr-notes__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.rr-notes__meta {
+    font-size: 12px;
+    color: rgb(var(--rr-text-tertiary));
+}
+
+.rr-notes__value {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 13px;
+    color: rgb(var(--rr-text));
+}
