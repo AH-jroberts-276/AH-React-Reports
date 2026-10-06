@@ -5,7 +5,7 @@ import { Button } from '@servicenow/react-components/Button';
 import { DashboardRow } from '../services/api';
 import { COLUMNS, DATE_SORT_FIELD, Column } from '../utils/constants';
 import { csvField } from '../utils/csv';
-import { buildRecordLink, buildTaskLink } from '../utils/links';
+import { buildRecordLink, buildTaskLink, buildRaListLink } from '../utils/links';
 import { Pagination } from './Pagination';
 
 interface Props {
@@ -175,6 +175,20 @@ export function ResultsTable({
                 </a>
             ) : (
                 row.task
+            );
+        }
+        if (col.key === 'matchedVia') {
+            return row.raQuery ? (
+                <a
+                    className="trad-link"
+                    href={buildRaListLink(row.raQuery)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {row.matchedVia}
+                </a>
+            ) : (
+                row.matchedVia
             );
         }
         return (row as unknown as Record<string, string>)[col.key];

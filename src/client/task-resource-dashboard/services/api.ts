@@ -29,6 +29,7 @@ export interface DashboardRow {
     task: string;
     taskId: string;
     matchedVia: string;
+    raQuery?: string;
     status: string;
     created: string;
     createdSort: string;
@@ -524,6 +525,23 @@ async function fetchAggregate(
         ]
             .filter(Boolean)
             .join(' & ');
+        // When the row matched (partly) via a resource assignment, link the
+        // "Matched via" cell to the list of RAs that produced the match: RAs for
+        // the selected users/members, within the date window, tied to this
+        // aggregate record through its RA id field(s).
+        const raQuery =
+            rm && m?.viaRa
+                ? cfg.raIdFields
+                      .map(f =>
+                          joinQuery([
+                              `user_resourceIN${rm.userIds.join(',')}`,
+                              ...rm.dateClauses,
+                              cfg.raClassFilter,
+                              `${f}=${id}`,
+                          ]),
+                      )
+                      .join('^NQ')
+                : '';
         return {
             id,
             type: entry.label,
@@ -531,11 +549,21 @@ async function fetchAggregate(
             table: entry.table,
             number: display(r.number),
             name: display(r.short_description),
-            group: display(r.assignment_group) || joinCapped(groups),
-            user: display(r.assigned_to) || joinCapped(users),
+            // Show the match-connection values, not the aggregate record's own
+            // assignment_group / assigned_to owner (which may have no connection
+            // to the selected group/users). For a resource-assignment match the
+            // group is the RA's own Group (group_resource) and the user is the
+            // RA resource; for a child-task match they are the task's assignment
+            // group and assignee. A value here that isn't the filtered group/
+            // member means a genuine connection (e.g. the group recorded on the
+            // RA at creation time), so it stays visible by design rather than
+            // being replaced by the project's own fields.
+            group: joinCapped(groups),
+            user: joinCapped(users),
             task: '',
             taskId: '',
             matchedVia,
+            raQuery,
             status: display(r.state),
             created: display(r.sys_created_on),
             createdSort: value(r.sys_created_on),
