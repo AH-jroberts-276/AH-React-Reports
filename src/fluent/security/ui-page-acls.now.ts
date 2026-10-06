@@ -27,7 +27,7 @@ export const task_resource_dashboard_page_acl = Acl({
     operation: 'read',
     roles: ['itil'],
     adminOverrides: true,
-    description: 'Restrict the Task & Resource Assignment Dashboard UI page to users with the itil role.',
+    description: 'Restrict the Task and Resource Assignments UI page to users with the itil role.',
 })
 
 export const sla_breach_dashboard_page_acl = Acl({

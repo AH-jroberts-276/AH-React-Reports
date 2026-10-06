@@ -6,7 +6,7 @@ export const task_resource_dashboard_page = UiPage({
     $id: Now.ID['task-resource-dashboard-page'],
     endpoint: 'x_cahcs_react_rpt_task_resource_dashboard.do',
     description:
-        'Task & Resource Assignment Dashboard — read-only React UI page unifying tasks and resource assignments.',
+        'Task and Resource Assignments — read-only React UI page unifying tasks and resource assignments.',
     html: html,
     direct: true,
 })

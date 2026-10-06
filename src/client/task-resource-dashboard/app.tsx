@@ -16,7 +16,7 @@ import { DEFAULT_PAGE_SIZE } from './utils/constants';
 import './app.css';
 
 const PROMPT = 'Choose filters to begin';
-const TITLE = 'Task & Resource Assignment Dashboard';
+const TITLE = 'Task and Resource Assignments';
 
 export default function App() {
     const [groups, setGroups] = useState<Option[]>([]);

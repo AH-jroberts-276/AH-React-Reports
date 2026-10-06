@@ -218,13 +218,25 @@ export async function fetchStatusOptions(typeIds: string[]): Promise<Option[]> {
     const entries = effectiveEntries(typeIds);
     if (!entries.length) return [];
 
-    const labels: string[] = [];
-    const seen = new Set<string>();
-    const add = (label: string) => {
-        if (label && !seen.has(label)) {
-            seen.add(label);
-            labels.push(label);
+    // When more than one work type is selected, each status option's display
+    // label is suffixed with the work type(s) it applies to, e.g.
+    // "Closed Complete (Incident, Project Task)". The option VALUE stays the raw
+    // status label so downstream status resolution (fetchStatusResolver) and
+    // selection pruning in app.tsx are unaffected.
+    const multiType = entries.length > 1;
+
+    // First-seen order of labels, plus the set of work-type labels each applies to.
+    const order: string[] = [];
+    const typesByLabel = new Map<string, Set<string>>();
+    const add = (label: string, typeLabel: string) => {
+        if (!label) return;
+        let set = typesByLabel.get(label);
+        if (!set) {
+            set = new Set<string>();
+            typesByLabel.set(label, set);
+            order.push(label);
         }
+        set.add(typeLabel);
     };
 
     const taskEntries = entries.filter(e => e.kind !== 'ra');
@@ -238,7 +250,24 @@ export async function fetchStatusOptions(typeIds: string[]): Promise<Option[]> {
             sysparm_limit: '1000',
         });
         const { rows } = await tableGet('sys_choice', params);
-        for (const r of rows) add(value(r.label));
+        // Group the state labels by their defining table (in sequence order).
+        const labelsByTable = new Map<string, string[]>();
+        for (const r of rows) {
+            const label = value(r.label);
+            if (!label) continue;
+            const name = value(r.name);
+            if (!labelsByTable.has(name)) labelsByTable.set(name, []);
+            labelsByTable.get(name)!.push(label);
+        }
+        // Each task-like entry uses its own table's state choices, falling back
+        // to the base `task` choices when the table defines none of its own —
+        // mirroring the resolver in fetchStatusResolver.
+        for (const entry of taskEntries) {
+            const labels = labelsByTable.get(entry.table)?.length
+                ? labelsByTable.get(entry.table)!
+                : labelsByTable.get(TASK_BASE_TABLE) || [];
+            for (const label of labels) add(label, entry.label);
+        }
     }
 
     const raEntries = entries.filter(e => e.kind === 'ra');
@@ -251,10 +280,13 @@ export async function fetchStatusOptions(typeIds: string[]): Promise<Option[]> {
             sysparm_limit: '1000',
         });
         const { rows } = await tableGet('sys_choice', params);
-        for (const r of rows) add(value(r.label));
+        for (const r of rows) add(value(r.label), entry.label);
     }
 
-    return labels.map(label => ({ value: label, label }));
+    return order.map(label => ({
+        value: label,
+        label: multiType ? `${label} (${[...typesByLabel.get(label)!].join(', ')})` : label,
+    }));
 }
 
 async function fetchStatusResolver(entries: TypeEntry[]): Promise<StatusResolver> {
