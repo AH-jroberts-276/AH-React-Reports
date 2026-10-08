@@ -92,6 +92,7 @@ export function FilterBar({ loading, onGenerate }: Props) {
                             options={groups}
                             selected={groupIds}
                             disabled={groupsLoading}
+                            optional={false}
                             onChange={setGroupIds}
                         />
                     </div>

@@ -12,6 +12,9 @@ interface Props {
     selected: string[];
     disabled?: boolean;
     addPlaceholder?: string;
+    // Shows the "(optional)" label hint. Defaults to true; pass false for
+    // required fields (e.g. Assignment groups).
+    optional?: boolean;
     onChange: (values: string[]) => void;
 }
 
@@ -20,7 +23,7 @@ interface Props {
 // (search="contains"), so the full list shows on open. Works in terms of
 // Option VALUE string[]s. Duplicated per-report by design — each report stays
 // self-contained with no cross-report imports.
-export function MultiSelect({ label, options, selected, disabled, addPlaceholder, onChange }: Props) {
+export function MultiSelect({ label, options, selected, disabled, addPlaceholder, optional = true, onChange }: Props) {
     // options ({value,label}) -> TypeaheadMulti items ({id,label}).
     const items = useMemo<TypeaheadMultiSelectedItem[]>(
         () => options.map(o => ({ id: o.value, label: o.label })),
@@ -48,7 +51,7 @@ export function MultiSelect({ label, options, selected, disabled, addPlaceholder
             selectedItems={selectedItems}
             search="contains"
             disableAutoClose
-            optional
+            optional={optional}
             disabled={disabled}
             placeholder={addPlaceholder}
             onSelectedItemsSet={handleSelectedItemsSet}

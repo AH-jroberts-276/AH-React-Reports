@@ -12,6 +12,9 @@ interface Props {
     selected: string[];
     disabled?: boolean;
     addPlaceholder?: string;
+    // Shows the "(optional)" label hint. Defaults to true; pass false for
+    // required fields (e.g. Assignment group, Work type).
+    optional?: boolean;
     onChange: (values: string[]) => void;
 }
 
@@ -19,7 +22,7 @@ interface Props {
 // for its custom control, but rendering the standard @servicenow/react-components
 // TypeaheadMulti underneath. All cascade/enable logic in app.tsx is unaffected
 // because the parent still works in terms of Option VALUE string[]s.
-export function MultiSelect({ label, options, selected, disabled, addPlaceholder, onChange }: Props) {
+export function MultiSelect({ label, options, selected, disabled, addPlaceholder, optional = true, onChange }: Props) {
     // options ({value,label}) -> TypeaheadMulti items ({id,label}).
     const items = useMemo<TypeaheadMultiSelectedItem[]>(
         () => options.map(o => ({ id: o.value, label: o.label })),
@@ -47,7 +50,7 @@ export function MultiSelect({ label, options, selected, disabled, addPlaceholder
             selectedItems={selectedItems}
             search="contains"
             disableAutoClose
-            optional
+            optional={optional}
             disabled={disabled}
             placeholder={addPlaceholder}
             onSelectedItemsSet={handleSelectedItemsSet}

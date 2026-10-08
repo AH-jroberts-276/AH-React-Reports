@@ -55,6 +55,7 @@ export function FilterBar(props: Props) {
                         options={props.groups}
                         selected={props.groupIds}
                         disabled={props.groupsLoading}
+                        optional={false}
                         onChange={props.onGroupChange}
                     />
                 </div>
@@ -72,6 +73,7 @@ export function FilterBar(props: Props) {
                         label="Work type"
                         options={TYPE_OPTIONS}
                         selected={props.typeSel}
+                        optional={false}
                         onChange={props.onTypeChange}
                     />
                 </div>
