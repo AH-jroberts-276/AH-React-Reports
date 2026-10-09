@@ -8,6 +8,17 @@ declare global {
                     '17b05623872f8f901e7cebdd3fbb35ab': {
                         table: 'sys_scope_privilege'
                         id: '17b05623872f8f901e7cebdd3fbb35ab'
+                        deleted: false
+                    }
+                    '1ba64a718777cf901e7cebdd3fbb358a': {
+                        table: 'sys_scope_privilege'
+                        id: '1ba64a718777cf901e7cebdd3fbb358a'
+                        deleted: true
+                    }
+                    '46a139bd97bb8bd40d54d124a253af99': {
+                        table: 'sys_scope_privilege'
+                        id: '46a139bd97bb8bd40d54d124a253af99'
+                        deleted: true
                     }
                     '4bb01623872f8f901e7cebdd3fbb357b': {
                         table: 'sys_scope_privilege'
@@ -16,6 +27,7 @@ declare global {
                     '4c89bb0d973b03940d54d124a253afa5': {
                         table: 'sys_scope_privilege'
                         id: '4c89bb0d973b03940d54d124a253afa5'
+                        deleted: true
                     }
                     '4fb01623872f8f901e7cebdd3fbb3582': {
                         table: 'sys_scope_privilege'
@@ -24,10 +36,17 @@ declare global {
                     '5489bb0d973b03940d54d124a253afc8': {
                         table: 'sys_scope_privilege'
                         id: '5489bb0d973b03940d54d124a253afc8'
+                        deleted: true
+                    }
+                    '555bf179977f8bd40d54d124a253af1d': {
+                        table: 'sys_scope_privilege'
+                        id: '555bf179977f8bd40d54d124a253af1d'
+                        deleted: true
                     }
                     '6711de63872f8f901e7cebdd3fbb35ba': {
                         table: 'sys_scope_privilege'
                         id: '6711de63872f8f901e7cebdd3fbb35ba'
+                        deleted: false
                     }
                     '6fb09623872f8f901e7cebdd3fbb355b': {
                         table: 'sys_scope_privilege'
@@ -36,14 +55,17 @@ declare global {
                     '9e119e63872f8f901e7cebdd3fbb358f': {
                         table: 'sys_scope_privilege'
                         id: '9e119e63872f8f901e7cebdd3fbb358f'
+                        deleted: false
                     }
                     '9fb05623872f8f901e7cebdd3fbb35a5': {
                         table: 'sys_scope_privilege'
                         id: '9fb05623872f8f901e7cebdd3fbb35a5'
+                        deleted: false
                     }
                     '9fb05623872f8f901e7cebdd3fbb35cb': {
                         table: 'sys_scope_privilege'
                         id: '9fb05623872f8f901e7cebdd3fbb35cb'
+                        deleted: false
                     }
                     'acl-ui-kpi-report': {
                         table: 'sys_security_acl'
@@ -112,6 +134,11 @@ declare global {
                     csp_read_user_group: {
                         table: 'sys_scope_privilege'
                         id: '76e1bb3312d04bd6b8b0aabe8820fd9b'
+                    }
+                    dd5bf179977f8bd40d54d124a253af0f: {
+                        table: 'sys_scope_privilege'
+                        id: 'dd5bf179977f8bd40d54d124a253af0f'
+                        deleted: true
                     }
                     'kpi-param-end-date': {
                         table: 'sys_ws_query_parameter'

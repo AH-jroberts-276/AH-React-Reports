@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { DateTime, DateTimeValueSet } from '@servicenow/react-components/DateTime';
 import { Button } from '@servicenow/react-components/Button';
 import { MultiSelect } from './MultiSelect';
+import { ManagerSelect } from './ManagerSelect';
 import { Option } from '../services/api';
 import { TYPE_REGISTRY } from '../utils/constants';
 import { readDateValue, toIsoDate, toDisplayDate } from '../utils/dates';
@@ -13,6 +14,7 @@ interface Props {
     usersLoading: boolean;
     groupIds: string[];
     userIds: string[];
+    managerIds: string[];
     typeSel: string[];
     statusSel: string[];
     startDate: string;
@@ -21,6 +23,7 @@ interface Props {
     busy: boolean;
     onGroupChange: (v: string[]) => void;
     onUserChange: (v: string[]) => void;
+    onManagerChange: (v: string[]) => void;
     onTypeChange: (v: string[]) => void;
     onStatusChange: (v: string[]) => void;
     onStartDateChange: (iso: string) => void;
@@ -43,8 +46,18 @@ export function FilterBar(props: Props) {
         [onEndDateChange],
     );
 
+    // Assignment group (+ its dependent User field) and Manager are mutually
+    // exclusive subjects: choosing one disables the other. app.tsx also clears
+    // the opposite selection, so only one subject is ever in play.
+    const groupActive = props.groupIds.length > 0;
+    const managerActive = props.managerIds.length > 0;
+
+    // A report needs a work type plus exactly one subject (group or manager).
     const applyDisabled =
-        props.busy || props.groupsLoading || props.groupIds.length === 0 || props.typeSel.length === 0;
+        props.busy ||
+        props.groupsLoading ||
+        props.typeSel.length === 0 ||
+        (props.groupIds.length === 0 && props.managerIds.length === 0);
 
     return (
         <div className="trad-filterbar">
@@ -54,7 +67,7 @@ export function FilterBar(props: Props) {
                         label="Assignment group"
                         options={props.groups}
                         selected={props.groupIds}
-                        disabled={props.groupsLoading}
+                        disabled={props.groupsLoading || managerActive}
                         optional={false}
                         onChange={props.onGroupChange}
                     />
@@ -64,8 +77,17 @@ export function FilterBar(props: Props) {
                         label="User"
                         options={props.users}
                         selected={props.userIds}
-                        disabled={props.usersLoading || props.groupIds.length === 0}
+                        disabled={props.usersLoading || props.groupIds.length === 0 || managerActive}
                         onChange={props.onUserChange}
+                    />
+                </div>
+                <div className="trad-filterbar__field trad-filterbar__field--manager">
+                    <ManagerSelect
+                        label="Manager"
+                        selected={props.managerIds}
+                        disabled={groupActive}
+                        optional={false}
+                        onChange={props.onManagerChange}
                     />
                 </div>
                 <div className="trad-filterbar__field trad-filterbar__field--type">

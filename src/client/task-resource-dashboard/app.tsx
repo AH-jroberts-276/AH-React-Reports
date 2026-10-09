@@ -25,6 +25,7 @@ export default function App() {
     const [usersLoading, setUsersLoading] = useState(false);
     const [groupIds, setGroupIds] = useState<string[]>([]);
     const [userIds, setUserIds] = useState<string[]>([]);
+    const [managerIds, setManagerIds] = useState<string[]>([]);
     const [typeSel, setTypeSel] = useState<string[]>([]);
     const [statusSel, setStatusSel] = useState<string[]>([]);
     const [startDate, setStartDate] = useState('');
@@ -97,6 +98,7 @@ export default function App() {
                 groupIds,
                 userIds,
                 memberIds: users.map(u => u.value),
+                managerIds,
                 typeIds: typeSel,
                 statusLabels: statusSel,
                 startDate,
@@ -112,11 +114,12 @@ export default function App() {
         } finally {
             setLoading(false);
         }
-    }, [groupIds, userIds, users, typeSel, statusSel, startDate, endDate]);
+    }, [groupIds, userIds, users, managerIds, typeSel, statusSel, startDate, endDate]);
 
     const handleClear = useCallback(() => {
         setGroupIds([]);
         setUserIds([]);
+        setManagerIds([]);
         setTypeSel([]);
         setStatusSel([]);
         setStartDate('');
@@ -126,6 +129,18 @@ export default function App() {
         setOverflows([]);
         setPage(1);
         setHasRun(false);
+    }, []);
+
+    // Assignment group and Manager are mutually exclusive subjects. Selecting
+    // one clears the other (and group clears its dependent User selection via
+    // the groupIds effect above), so a report always runs against exactly one.
+    const handleGroupChange = useCallback((v: string[]) => {
+        setGroupIds(v);
+        if (v.length) setManagerIds([]);
+    }, []);
+    const handleManagerChange = useCallback((v: string[]) => {
+        setManagerIds(v);
+        if (v.length) setGroupIds([]);
     }, []);
 
     const overflowMessage = overflows.length
@@ -154,14 +169,16 @@ export default function App() {
                         usersLoading={usersLoading}
                         groupIds={groupIds}
                         userIds={userIds}
+                        managerIds={managerIds}
                         typeSel={typeSel}
                         statusSel={statusSel}
                         startDate={startDate}
                         endDate={endDate}
                         statuses={statusOptions}
                         busy={loading}
-                        onGroupChange={setGroupIds}
+                        onGroupChange={handleGroupChange}
                         onUserChange={setUserIds}
+                        onManagerChange={handleManagerChange}
                         onTypeChange={setTypeSel}
                         onStatusChange={setStatusSel}
                         onStartDateChange={setStartDate}

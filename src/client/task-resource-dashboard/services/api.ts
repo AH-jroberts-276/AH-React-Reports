@@ -49,6 +49,7 @@ export interface DashboardFilters {
     groupIds: string[];
     userIds: string[];
     memberIds: string[];
+    managerIds: string[];
     typeIds: string[];
     statusLabels: string[];
     startDate: string;
@@ -214,6 +215,44 @@ export async function fetchGroupMembers(groupIds: string[]): Promise<Option[]> {
     return toOptions(rows, 'user');
 }
 
+// Manager picker options. Server-side (as-you-type) search over sys_user,
+// restricted to manager-level users (u_management_level 1..180). Unlike the
+// group-scoped User field this set is large (thousands), so we search on each
+// keystroke rather than preloading. `term` filters by name/user id; an empty
+// term returns the first page so the field shows suggestions as soon as it
+// opens.
+export async function fetchManagerOptions(term: string): Promise<Option[]> {
+    const safe = (term || '').trim().replace(/[\^]/g, ' ');
+    const query = joinQuery([
+        'active=true',
+        'u_management_level>0',
+        'u_management_level<=180',
+        safe ? `nameLIKE${safe}^ORuser_nameLIKE${safe}` : '',
+        'ORDERBYname',
+    ]);
+    const params = new URLSearchParams({
+        sysparm_display_value: 'all',
+        sysparm_exclude_reference_link: 'true',
+        sysparm_fields: 'sys_id,name,user_name',
+        sysparm_query: query,
+        sysparm_limit: '50',
+    });
+    const { rows } = await tableGet('sys_user', params);
+    const out: Option[] = [];
+    const seen = new Set<string>();
+    for (const r of rows) {
+        const v = value(r.sys_id);
+        if (!v || seen.has(v)) continue;
+        seen.add(v);
+        // Suffix the user id (user_name) so users who share a display name are
+        // distinguishable, e.g. "John Smith (jsmith2)".
+        const nm = display(r.name) || value(r.name);
+        const uid = value(r.user_name);
+        out.push({ value: v, label: nm ? (uid ? `${nm} (${uid})` : nm) : uid || v });
+    }
+    return out;
+}
+
 export async function fetchStatusOptions(typeIds: string[]): Promise<Option[]> {
     const entries = effectiveEntries(typeIds);
     if (!entries.length) return [];
@@ -338,23 +377,48 @@ function taskCriteriaClauses(filters: DashboardFilters): string[] {
     return [
         filters.groupIds?.length ? `assignment_groupIN${filters.groupIds.join(',')}` : '',
         filters.userIds?.length ? `assigned_toIN${filters.userIds.join(',')}` : '',
+        // Manager mode (mutually exclusive with group/user): match tasks whose
+        // assignee reports to one of the selected managers, via a dot-walk
+        // through assigned_to.manager.
+        filters.managerIds?.length ? `assigned_to.managerIN${filters.managerIds.join(',')}` : '',
         filters.startDate ? `sys_created_on>=${filters.startDate} 00:00:00` : '',
         filters.endDate ? `sys_created_on<=${filters.endDate} 23:59:59` : '',
     ];
 }
 
-function raMatch(filters: DashboardFilters): { userIds: string[]; dateClauses: string[] } | null {
+interface RaMatch {
+    userIds?: string[];
+    managerIds?: string[];
+    dateClauses: string[];
+}
+
+// Resolves how resource assignments (and the aggregate RA scan) are scoped to a
+// subject. In user/group mode this is a user-id list (chunked by user_resource);
+// in manager mode it is the selected manager ids, applied as a user_resource.manager
+// dot-walk. Returns null when there is no subject to scope by.
+function raMatch(filters: DashboardFilters): RaMatch | null {
+    const dateClauses = [
+        filters.endDate ? `start_date<=${filters.endDate}` : '',
+        filters.startDate ? `end_date>=${filters.startDate}` : '',
+    ];
+    if (filters.managerIds?.length) {
+        return { managerIds: filters.managerIds, dateClauses };
+    }
     const userIds = filters.userIds?.length
         ? filters.userIds
         : filters.groupIds?.length
           ? filters.memberIds || []
           : [];
     if (!userIds.length) return null;
-    const dateClauses = [
-        filters.endDate ? `start_date<=${filters.endDate}` : '',
-        filters.startDate ? `end_date>=${filters.startDate}` : '',
-    ];
     return { userIds, dateClauses };
+}
+
+// The user_resource scoping clause for a resolved RaMatch: a dot-walk through
+// the resource's manager in manager mode, or a user-id IN list otherwise.
+function raUserClause(m: RaMatch): string {
+    return m.managerIds?.length
+        ? `user_resource.managerIN${m.managerIds.join(',')}`
+        : `user_resourceIN${(m.userIds || []).join(',')}`;
 }
 
 // --- Per-entry fetchers -----------------------------------------------------
@@ -410,13 +474,13 @@ async function fetchResourceAssignments(
         ...m.dateClauses,
         statusValues?.length ? `resource_statusIN${statusValues.join(',')}` : '',
     ];
-    const { rows, capped } = await tableGetChunked(
-        entry.table,
-        staticClauses,
-        'user_resource',
-        m.userIds,
-        'sys_id,number,short_description,group_resource,user_resource,task,resource_status,start_date,end_date,sys_created_on',
-    );
+    const raFields =
+        'sys_id,number,short_description,group_resource,user_resource,task,resource_status,start_date,end_date,sys_created_on';
+    // Manager mode scopes by a user_resource.manager dot-walk (a single static
+    // query); user/group mode chunks by the user-id list.
+    const { rows, capped } = m.managerIds?.length
+        ? await collectStaticRows(entry.table, [...staticClauses, raUserClause(m)], raFields)
+        : await tableGetChunked(entry.table, staticClauses, 'user_resource', m.userIds!, raFields);
     const mapped: DashboardRow[] = rows.map(r => ({
         id: value(r.sys_id),
         type: entry.label,
@@ -491,14 +555,14 @@ async function fetchAggregate(
         if (u) m.users.add(u);
     }
 
-    // (2) Resource assignments scoped to matched users.
+    // (2) Resource assignments scoped to the subject (users / group members, or
+    // in manager mode a user_resource.manager dot-walk).
     const rm = raMatch(filters);
     if (rm) {
-        const ra = await collectMemberScopedRows(
-            [...rm.dateClauses, cfg.raClassFilter],
-            rm.userIds,
-            `sys_id,${cfg.raIdFields.join(',')},group_resource,user_resource`,
-        );
+        const raFields = `sys_id,${cfg.raIdFields.join(',')},group_resource,user_resource`;
+        const ra = rm.managerIds?.length
+            ? await collectStaticRows(RA_TABLE, [...rm.dateClauses, cfg.raClassFilter, raUserClause(rm)], raFields)
+            : await collectMemberScopedRows([...rm.dateClauses, cfg.raClassFilter], rm.userIds!, raFields);
         capped = capped || ra.capped;
         for (const row of ra.rows) {
             for (const idf of cfg.raIdFields) {
@@ -513,15 +577,19 @@ async function fetchAggregate(
             }
         }
 
-        // (3) Records whose manager field matches a selected user.
+        // (3) Records connected through their own manager field. In user/group
+        // mode this matches when the project/demand manager IS a selected user;
+        // in manager mode it matches when that manager REPORTS TO a selected
+        // manager (project_manager.manager / demand_manager.manager dot-walk).
         if (cfg.managerField) {
-            const mgr = await tableGetChunked(
-                entry.table,
-                [],
-                cfg.managerField,
-                rm.userIds,
-                `sys_id,${cfg.managerField}`,
-            );
+            const mgrFields = `sys_id,${cfg.managerField}`;
+            const mgr = rm.managerIds?.length
+                ? await collectStaticRows(
+                      entry.table,
+                      [`${cfg.managerField}.managerIN${rm.managerIds.join(',')}`],
+                      mgrFields,
+                  )
+                : await tableGetChunked(entry.table, [], cfg.managerField, rm.userIds!, mgrFields);
             capped = capped || mgr.capped;
             for (const row of mgr.rows) {
                 const id = value(row.sys_id);
@@ -566,7 +634,7 @@ async function fetchAggregate(
                 ? cfg.raIdFields
                       .map(f =>
                           joinQuery([
-                              `user_resourceIN${rm.userIds.join(',')}`,
+                              raUserClause(rm),
                               ...rm.dateClauses,
                               cfg.raClassFilter,
                               `${f}=${id}`,

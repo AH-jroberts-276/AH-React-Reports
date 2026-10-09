@@ -120,11 +120,22 @@
 .trad-filterbar__field--type {
   flex: 1 1 var(--type-field-width, 220px);
   min-width: var(--type-field-width, 200px);
+  /* Column 1 in Manager's row is taken, so starting Work type at column 1
+     bumps it (and Status/State after it) onto the row below Manager. */
+  grid-column: 1 / 2;
 }
 
 .trad-filterbar__field--status {
   flex: 1 1 var(--status-field-width, 340px);
   min-width: var(--status-field-width, 320px);
+}
+
+/* Manager is a standalone subject (mutually exclusive with Assignment group /
+   User), so it sits alone on its own row at the same (single-column) width as
+   the Assignment group field. Forcing Work type to start column 1 (below)
+   bumps it (and Status/State beside it) onto the following row. */
+.trad-filterbar__field--manager {
+  grid-column: 1 / 2;
 }
 
 /* Optional date-range filters. Narrower than the searchable fields since a

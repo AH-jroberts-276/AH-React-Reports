@@ -103,11 +103,11 @@ All entries have `status = allowed`.
 |---|---|---|---|
 | `task_sla` | read | `3a55f90f12c041d5acebed24c6107075` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=3a55f90f12c041d5acebed24c6107075) |
 | `incident` | read | `4e91e24a3961468ca3ad77a3d23100cb` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=4e91e24a3961468ca3ad77a3d23100cb) |
-| `sys_user_group` | read | `9e119e63872f8f901e7cebdd3fbb358f` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=9e119e63872f8f901e7cebdd3fbb358f) |
-| `sys_user_grmember` | read | `9fb05623872f8f901e7cebdd3fbb35a5` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=9fb05623872f8f901e7cebdd3fbb35a5) |
-| `time_card` | read | `9fb05623872f8f901e7cebdd3fbb35cb` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=9fb05623872f8f901e7cebdd3fbb35cb) |
+| `sys_user_group` | read | `76e1bb3312d04bd6b8b0aabe8820fd9b` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=76e1bb3312d04bd6b8b0aabe8820fd9b) |
+| `sys_user_grmember` | read | `2047118080fe4435992422c58e5eadd3` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=2047118080fe4435992422c58e5eadd3) |
+| `time_card` | read | `08e0bc11c04a4bb5afe7c84a7727c9bf` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=08e0bc11c04a4bb5afe7c84a7727c9bf) |
 | `resource_aggregate_weekly` | read | `17b05623872f8f901e7cebdd3fbb35ab` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=17b05623872f8f901e7cebdd3fbb35ab) |
-| `resource_aggregate_monthly` | read | `6711de63872f8f901e7cebdd3fbb35ba` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=6711de63872f8f901e7cebdd3fbb35ba) |
+| `resource_aggregate_monthly` | read | `3764b3a4fe33416cbfb191ef3a000e75` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=3764b3a4fe33416cbfb191ef3a000e75) |
 | `metric_instance` | read | `c52f64bc122f4077844d9e73a4528d0b` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=c52f64bc122f4077844d9e73a4528d0b) |
 | `sc_task` | read | `cd00010113fe4328a17b585d7ef31455` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=cd00010113fe4328a17b585d7ef31455) |
 | `sys_audit` | read | `3afe4ab75d1540ee95c90b21440e06a2` | [open](https://advocatedev.service-now.com/sys_scope_privilege.do?sys_id=3afe4ab75d1540ee95c90b21440e06a2) |
